@@ -93,9 +93,9 @@ index_with_subtitle: false
 # Value after `||` delimeter is the name of FontAwesome icon. If icon (with or without delimeter) is not specified, question icon will be loaded.
 menu:
   home: / || home
-  #about: /about/ || user
+  about: /about/ || user
   #tags: /tags/ || tags
-  #categories: /categories/ || th
+  categories: /categories/ || th
   archives: /archives/ || archive
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
@@ -126,22 +126,26 @@ scheme: Pisces
 # Key is the link label showing to end users.
 # Value before `||` delimeter is the target permalink.
 # Value after `||` delimeter is the name of FontAwesome icon. If icon (with or without delimeter) is not specified, globe icon will be loaded.
-#social:
-  #GitHub: https://github.com/yourname || github
-  #E-Mail: mailto:yourname@gmail.com || envelope
-  #Google: https://plus.google.com/yourname || google
+social:
+  GitHub: https://github.com/CodingJzy/ || github
+  E-Mail: mailto:jw19961019@gmail.com || envelope
+  Google: https://plus.google.com/jiangwei || google
   #Twitter: https://twitter.com/yourname || twitter
   #FB Page: https://www.facebook.com/yourname || facebook
   #VK Group: https://vk.com/yourname || vk
   #StackOverflow: https://stackoverflow.com/yourname || stack-overflow
   #YouTube: https://youtube.com/yourname || youtube
-  #Instagram: https://instagram.com/yourname || instagram
-  #Skype: skype:yourname?call|chat || skype
-
+  Instagram: https://instagram.com/codingxjm || instagram
+  #Skype: skype:13006293101?call|chat || skype
+  Weibo: https://weibo.com/u/5754053497/
+  ZhiHu: https://www.zhihu.com/people/jiang-wei-42-10/ 
+ 
 social_icons:
   enable: true
   icons_only: false
   transition: false
+  Weibo: weibo
+  Zhihu: zhihu
 
 # Blog rolls
 links_icon: link
@@ -166,7 +170,7 @@ toc:
   # If true, all words will placed on next lines if header width longer then sidebar width.
   wrap: false
 
-# Creative Commons 4.0 International License.
+# Creative Commos 4.0 International License.
 # http://creativecommons.org/
 # Available: by | by-nc | by-nc-nd | by-nc-sa | by-nd | by-sa | zero
 #creative_commons: by-nc-sa
@@ -237,14 +241,14 @@ post_wordcount:
 
 # Wechat Subscriber
 #wechat_subscriber:
-  #enabled: true
-  #qcode: /path/to/your/wechatqcode ex. /uploads/wechat-qcode.jpg
-  #description: ex. subscribe to my blog by scanning my public wechat account
+# enabled: true
+# qcode: /path/to/your/wechatqcode ex. /uploads/wechat-qcode.jpg
+# description: ex. subscribe to my blog by scanning my public wechat account
 
 # Reward
 #reward_comment: Donate comment here
-#wechatpay: /images/wechatpay.jpg
-#alipay: /images/alipay.jpg
+wechatpay: /uploads/wechat.jpg
+alipay: /uploads/alipay.jpg
 #bitcoin: /images/bitcoin.png
 
 # Declare license on posts
@@ -277,7 +281,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: normal
+highlight_theme: night bright 
 
 
 # ---------------------------------------------------------------
@@ -353,7 +357,7 @@ han: false
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+baidu_analytics: ee4786c90511aa3814af4b7c6537a3b5
 
 # Duoshuo ShortName
 #duoshuo_shortname:
