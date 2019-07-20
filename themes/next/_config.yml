@@ -137,15 +137,13 @@ social:
   #YouTube: https://youtube.com/yourname || youtube
   Instagram: https://instagram.com/codingxjm || instagram
   #Skype: skype:13006293101?call|chat || skype
-  Weibo: https://weibo.com/u/5754053497/
-  ZhiHu: https://www.zhihu.com/people/jiang-wei-42-10/ 
+  微博: https://weibo.com/u/5754053497/ || weibo
+  知乎: https://www.zhihu.com/people/jiang-wei-42-10/ || zhihu
  
 social_icons:
   enable: true
   icons_only: false
   transition: false
-  Weibo: weibo
-  Zhihu: zhihu
 
 # Blog rolls
 links_icon: link
@@ -281,7 +279,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: night bright 
+highlight_theme: normal
 
 
 # ---------------------------------------------------------------
