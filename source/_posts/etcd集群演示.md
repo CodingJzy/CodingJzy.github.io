@@ -353,7 +353,7 @@ lease 733a6c05eaa6c690 granted with TTL(300s), remaining(125s)
 lease 733a6c05eaa6c690 keepalived with TTL(300)
 ```
 
-## lock
+### lock
 
 先在一台机器创建锁：
 
