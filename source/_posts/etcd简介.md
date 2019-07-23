@@ -24,7 +24,7 @@ categories: etcd
 - `Raft`：`etcd`所采用的保证分布式系统强一致性的算法。
 - `Node`：一个`Raft`状态机实例。
 - `Member`： 一个`etcd`实例。它管理着一个`Node`，并且可以为客户端请求提供服务。
-- `Cluster`：由多个Member构成可以协同工作的`etcd`集群。
+- `Cluster`：由多个`Member`构成可以协同工作的`etcd`集群。
 - `Peer`：对同一个`etcd`集群中另外一个`Member`的称呼。
 - `Client`： 向`etcd`集群发送HTTP请求的客户端。
 - `WAL`：预写式日志，`etcd`用于持久化存储的日志格式。
@@ -36,3 +36,65 @@ categories: etcd
 - `Term`：某个节点成为`Leader`到下一次竞选开始的时间周期，称为一个`Term`。
 - `Index`：数据项编号。`Raft`中通过`Term`和`Index`来定位数据。
 
+## 下载安装
+
+```linux
+# 选择下载的版本
+VERSION=v3.3.13
+
+# 设置下载的url
+DOWNLOAD_URL=https://github.com/etcd-io/etcd/releases/download
+
+# 创建安装目录
+mkdir -p /usr/local/etcd
+
+# curl下载
+curl -L ${DOWNLOAD_URL}/${VERSION}/etcd-${VERSION}-linux-amd64.tar.gz -o /tmp/etcd-${VERSION}-linux-amd64.tar.gz
+
+# 解压
+tar xzvf /tmp/etcd-${VERSION}-linux-amd64.tar.gz -C /usr/local/etcd --strip-components=1
+
+# 删除下载
+rm -f /tmp/etcd-${VERSION}-linux-amd64.tar.gz
+
+# 设置环境变量
+vim /etc/profile
+# add etcd
+export PATH=$PATH:/usr/local/etcd
+export ETCDCTL_API=3
+
+# 配置生效
+source /etc/profile
+```
+
+## 测试
+
+### 查看版本
+
+```linux
+# etcd
+[root@jw-centos1 ~]# etcd --version
+etcd Version: 3.3.13
+Git SHA: 98d3084
+Go Version: go1.10.8
+Go OS/Arch: linux/amd64
+
+# etcdctl
+[root@jw-centos1 ~]# etcdctl version
+etcdctl version: 3.3.13
+API version: 3.3
+
+```
+
+### 设置一个key
+
+```go
+[root@jw-centos1 ~]# etcdctl put foo bar
+OK
+
+[root@jw-centos1 ~]# etcdctl get foo
+foo
+bar
+```
+
+如果确定打印，那么`etcd`正在运行！
