@@ -254,15 +254,118 @@ func ParseUint(s string, base int, bitSize int) (n uint64, err error) {}
 
 #### FormatBool()
 
+将布尔值格式化为对应的字符串，函数原型为：
+
+```go
+func FormatBool(b bool) string {}
+```
+
+返回值为`true`或者`false`
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func testBool(b bool) {
+
+	s := strconv.FormatBool(b)
+	fmt.Println(s)
+}
+
+func main() {
+	b1 := true
+	var b2 bool
+	testBool(b1)
+	testBool(b2)
+}
+
+```
+
+执行结果：
+
+```go
+true
+false
+```
+
 #### FormatInt()
+
+将数字格式化为对应的字符串，支持指定进制，函数原型为：
+
+```go
+func FormatInt(i int64, base int) string {}
+```
+
+`base` 必须在2到36之间，结果中会使用小写字母’a’到’z’表示大于10的数字。
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func testInt(i int64, base int) {
+
+	s := strconv.FormatInt(i, base)
+	fmt.Printf("类型：%T\t值：%#v\n", s, s)
+}
+
+func main() {
+	var i1 int64 = 10
+	var i2 int64 = 16
+	testInt(i1, 2)
+	testInt(i2, 16)
+}
+
+```
+
+执行结果：
+
+```go
+类型：string	值："1010"
+类型：string	值："10"
+```
 
 #### FormatUnit()
 
+是`FormatInt`的无符号整数版本，函数原型为：
+
+```go
+func FormatUint(i uint64, base int) string {}
+```
+
 #### FormatFloat()
 
-### 其他
+将浮点型的数字转换为对应的字符串，函数原型为：
 
-#### IsPrint()
+```go
+func FormatFloat(f float64, fmt byte, prec, bitSize int) string {}
+```
 
-#### CanBackquote()
+`bitSize`表示f的来源类型（32：float32、64：float64），会据此进行舍入。
+
+`fmt`表示格式：`f`（-ddd.dddd）、`b`（-ddddp±ddd，指数为二进制）、`e`（-d.dddde±dd，十进制指数）、`E`（-d.ddddE±dd，十进制指数）、`g`指数很大时用’e’格式，否则`f`格式）、`G`（指数很大时用`E`式，否则`f`格式）。
+
+`prec`控制精度（排除指数部分）：对`f、e、E`，它表示小数点后的数字个数；对`g、G`，它控制总的数字个数。如果`prec` 为-1，则代表使用最少数量的、但又必需的数字来表示f。
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	s1 := strconv.FormatFloat(3.1415, 'E', -1, 64)
+	// 3.1415E+00
+	fmt.Println(s1)
+}
+```
 
