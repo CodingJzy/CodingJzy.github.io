@@ -178,6 +178,8 @@ Experimental:     false
 
 ### 设置代理
 
+有些镜像在国内网络环境拉取不到，比如`k8s`相关的一些镜像包。还有在公司内部网络环境，需要走代理才能访问外网，这时候需要配置代理。
+
 #### 为docker服务创建一个内嵌的systemd目录
 
 ```linux
@@ -204,6 +206,8 @@ systemctl daemon-reload  && systemctl restart docker
 
 ### 更换镜像源
 
+更换镜像源可以加快镜像的拉取速度。
+
 #### 编辑文件
 
 路径：`/etc/docker/daemon.json`
@@ -213,3 +217,8 @@ systemctl daemon-reload  && systemctl restart docker
  "registry-mirrors": ["https://o9wm45c3.mirror.aliyuncs.com"]
 }
 ```
+
+### 添加用户到docker用户组
+
+为了避免每次使用docker命令时都需要切换到`root`身份。可以将当前用户加入到安装中自动创建的docker用户组。
+
