@@ -67,6 +67,42 @@ export ETCDCTL_API=3
 source /etc/profile
 ```
 
+## 编写systemd服务
+
+```linux
+cat > /etc/systemd/system/etcd.service <<EOF
+[Unit]
+Description=etcd
+Documentation=https://github.com/coreos/etcd
+Conflicts=etcd.service
+Conflicts=etcd2.service
+
+[Service]
+Type=notify
+Restart=always
+RestartSec=5s
+LimitNOFILE=40000
+TimeoutStartSec=0
+
+ExecStart=/usr/local/etcd/etcd --config-file=/etc/etcd/conf-discovery-dns.yml
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 重新加载配置
+systemctl daemon-reload
+
+# 启动etcd
+systemctl start etcd
+
+
+```
+
+#### 注意：
+
+我这里编写的是etcd集群服务。通过dns发现的机制引导集群。单机的etcd服务需要自行更改`ExecStart`。
+
 ## 测试
 
 ### 查看版本
