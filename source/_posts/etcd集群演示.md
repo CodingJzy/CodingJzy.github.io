@@ -1,7 +1,7 @@
 ---
 title: etcd集群演示
 date: 2019-07-22 13:43:24
-categories: etcd
+categories: Etcd
 ---
 
 # 集群演示

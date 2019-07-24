@@ -1,7 +1,7 @@
 ---
 title: etcd多成员集群
 date: 2019-07-23 16:46:09
-categories: etcd
+categories: Etcd
 ---
 
 # etcd多集群

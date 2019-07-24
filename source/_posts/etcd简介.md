@@ -1,7 +1,7 @@
 ---
 title: etcd简介
 date: 2019-07-23 08:17:51
-categories: etcd
+categories: Etcd
 ---
 
 # ETCD
