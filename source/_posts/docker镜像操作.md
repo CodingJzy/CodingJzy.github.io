@@ -158,6 +158,12 @@ jiangziya/python                                0
 jiangziya/anchore_engine    docker镜像扫描工具        0  
 ```
 
+## 镜像标签
+
+一个镜像id可以被不同镜像标签名引用。比如说我把docker官方的python镜像打一个tag名。
+
+
+
 ## 删除和清理镜像
 
 ### 删除
@@ -172,6 +178,8 @@ Untagged: golang:1.12.7-alpine
 Untagged: golang@sha256:1121c345b1489bb5e8a9a65b612c8fed53c175ce72ac1c76cf12bbfc35211310
 Deleted: sha256:6b21b4c6e7a3d4a9496fff4ca5cf2069baaf4787d8f4adb1e2cf10acd2b69e1a
 ```
+
+在删除镜像的时候，一个镜像id可能被多个镜像引用。也就是一个镜像拥有多个标签的时候，可能会造成无法删除的情况，先删最后引用的镜像，最后删除原始镜像。
 
 ### 清理
 
@@ -189,7 +197,7 @@ Total reclaimed space: 0B
 
 ### none
 
-在用dockerfile构建镜像的时候，有时候也会产生标签名和仓库名为none的情况，所以，可以自己组装命令：
+在用dockerfile构建镜像的时候，有时候也会产生标签名和仓库名为`none`的情况，所以，可以自己组装命令：
 
 ```linux
 docker rmi $(docker images -f "dangling=true" -q)
