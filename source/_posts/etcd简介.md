@@ -70,6 +70,7 @@ source /etc/profile
 ## 编写systemd服务
 
 ```linux
+# 写入文件
 cat > /etc/systemd/system/etcd.service <<EOF
 [Unit]
 Description=etcd
@@ -95,8 +96,6 @@ systemctl daemon-reload
 
 # 启动etcd
 systemctl start etcd
-
-
 ```
 
 #### 注意：
