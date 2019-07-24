@@ -6,3 +6,7 @@ npm install hexo --save
 
 ### hexo-deployer-git
 npm install hexo-deployer-git --save
+
+### add sitemap
+npm install hexo-generator-sitemap --save
+npm install hexo-generator-baidu-sitemap --save
