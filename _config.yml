@@ -35,19 +35,25 @@ search:
   limit: 10000
 
 live2d:
-  enable: true
-  scriptFrom: local
-  pluginRootPath: live2dw/
-  pluginJsPath: lib/
-  pluginModelPath: assets/
   model:
+    scale: 1
+    hHeadPos: 0.5
+    vHeadPos: 0.618
     use: live2d-widget-model-tororo
   display:
+    superSample: 2
+    width: 300
+    height: 260
     position: right
-    width: 150
-    height: 300
+    hOffset: 150
+    vOffset: 300
   mobile:
     show: true
+    scale: 0.5
+  react:
+    opacityDefault: 0.5
+    opacityOnHover: 0.4
+
 
 # Writing
 new_post_name: :title.md # File name of new posts
