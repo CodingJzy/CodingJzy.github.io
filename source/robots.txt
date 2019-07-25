@@ -14,3 +14,4 @@ Disallow: /fancybox/
 
 Sitemap: https://jiangziya.top/sitemap.xml
 Sitemap: http://jiangziya.top/baidusitemap.xml
+Sitemap: https://jiangziya.top/BingSiteAuth.xml
