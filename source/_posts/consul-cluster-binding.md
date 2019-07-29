@@ -123,7 +123,7 @@ client_addr="172.19.19.124 127.0.0.1"
 - `datacenter`：集群的数据中心，多个集群可以同时使用多个数据中心。我们只部署一个集群就使用同一个数据中心
 - `data_dir`：`agent`存储状态的数据目录
 - `encrypt`：指定用于加密`consul`网络流量的base64密钥，可以用`consul keygen`生存或者自己通过其他方式生成
-- `client_addr`：`consul`将绑定客户端接口的地址，包括HTTP和DNS服务器。默认是`127.0.0.1`，可以将其设置为以空格分割的列表。
+- `client_addr`：`consul`将绑定客户端接口的地址，包括HTTP和DNS服务器。默认是`127.0.0.1`，可以将其设置为以空格分割的列表
 
 #### 集群自动加入
 
@@ -161,7 +161,7 @@ ui = true
 
 - `server`：此标志用于控制该`agent`是处于服务器模式还是客户端模式
 - `bootstrap_expect`：此标志提供数据中心中预期的服务器数。不应提供此值，或者该值必须与群集中的其他服务器一致。和`etcd`一样推荐使用单数。我这里因为演示不搭建那么多机器
-- `ui`：`consul`自带的一个web界面。应该考虑选定的Consul机器而不是所有机器上运行Consul UI。
+- `ui`：`consul`自带的一个web界面。应该考虑选定的Consul机器而不是所有机器上运行Consul UI
 
 ### 客户端
 
@@ -190,7 +190,7 @@ jw-etcd02  172.19.19.123:8301  alive   client  1.5.3  2         dc1  <default>
 
 ### put
 
-在`jw-etcd01`(client)机器上`put`一个值：
+在`jw-etcd01`(server)机器上`put`一个值：
 
 ```linux
 [root@jw-etcd01 consul.d]# consul kv put name jiang_wei
@@ -199,7 +199,7 @@ Success! Data written to: name
 
 ### get
 
-在`jw-etcd02`机器上`get`一个值：
+在`jw-etcd02`(client)机器上`get`一个值：
 
 ```linux
 [root@jw-etcd02 consul]# consul kv get name
