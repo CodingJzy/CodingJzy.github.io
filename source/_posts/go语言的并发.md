@@ -336,7 +336,7 @@ package main
 import "fmt"
 
 func send(ch chan int)  {
-	for i := 0;i < 10;i++ {
+	for i := 0;i < 10; i++ {
 		ch <- i
 	}
 	close(ch)
@@ -374,9 +374,284 @@ func main() {
 
 ## 并发安全和锁
 
+先来看一个示例，多个goroutine同时对同一个变量进行修改：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// 定义一个全局变量
+var x int
+
+var wg sync.WaitGroup
+
+// 定义一个函数，对x进行循环递增操作
+func add() {
+	for i := 0; i < 5000; i++ {
+		x++
+	}
+	wg.Done()
+}
+
+func main() {
+
+	// 开启两个goroutine，同时对变量x进行修改。
+	fmt.Println("开启")
+	wg.Add(2)
+	go add()
+	go add()
+	wg.Wait()
+	fmt.Println("结束")
+	fmt.Println("x的值为：", x)
+}
+
+```
+
+执行多次结果：
+
+```go
+开启
+结束
+x的值为： 6731
+
+开启
+结束
+x的值为： 5950
+
+开启
+结束
+x的值为： 10000
+```
+
+可以看出来，会对数据造成混乱，所以需要对数据进行加锁。
+
 ### 互斥锁
 
+定义一个互斥锁`sync.Mutex`：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// 定义一个全局变量
+var x int
+
+var wg sync.WaitGroup
+
+// 定义一个互斥锁
+var lock sync.Mutex
+
+// 定义一个函数，对x进行循环递增操作
+func add() {
+	for i := 0; i < 5000; i++ {
+
+		// 加锁
+		lock.Lock()
+		x++
+		// 解锁
+		lock.Unlock()
+	}
+	wg.Done()
+}
+
+func main() {
+
+	// 开启两个goroutine，同时对变量x进行修改。
+	fmt.Println("开启")
+	wg.Add(2)
+	go add()
+	go add()
+	wg.Wait()
+	fmt.Println("结束")
+	fmt.Println("x的值为：", x)
+}
+
+```
+
+执行多次的结果：
+
+```go
+开启
+结束
+x的值为： 10000
+
+开启
+结束
+x的值为： 10000
+```
+
+可以看出，执行结果都是一样的，加锁后，同一时刻只能有一个`goroutine`抢到这把锁，从而执行对数据的修改。
+
 ### 读写互斥锁
+
+互斥锁是完全互斥的，但是有时候我们只是单纯的读那个资源，加锁是没必要的。对于读多写少的场景，go语言提供了另一种锁，称为读写互斥锁。也就是`sync`包的`RWMutex`类型。
+
+先来看一个加互斥锁的代码：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+var (
+	x    int
+	lock sync.Mutex
+	wg   sync.WaitGroup
+)
+
+// 定义一个读方法
+func read() {
+	// 加互斥锁
+	lock.Lock()
+	// 模拟读消耗的时间为1毫秒
+	time.Sleep(time.Millisecond * 1)
+	// 解互斥锁
+	lock.Unlock()
+	wg.Done()
+}
+
+// 定义一个写方法
+func write() {
+	// 加互斥锁
+	lock.Lock()
+	// 修改x的值
+	x++
+	// 模拟写操作的时间为10毫秒
+	time.Sleep(time.Millisecond * 10)
+    // 解互斥锁
+	lock.Unlock()
+	wg.Done()
+}
+
+func main() {
+	// 程序开始时间
+	start := time.Now()
+
+	// 模拟写场景,10次
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go write()
+	}
+	//模拟读场景，读10000万次
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go read()
+	}
+	// 两个goroutine都执行完毕
+	wg.Wait()
+
+	// 程序结束时间
+	end := time.Now()
+
+	// 读写共耗时
+	fmt.Println(end.Sub(start))
+}
+```
+
+执行多次的结果：
+
+```go
+11.21610598s
+11.234064043s
+11.181700508s
+```
+
+很显然，这是加锁不合理的。因为我对数据的修改只有10次，1次消耗10毫秒，修改10次也就100毫秒，也就是0.1秒。对数据的读是不对数据进行修改的，1次消耗1毫秒，1万次就是10000毫秒。也就是10秒。所以，程序最终的耗时是以读的消耗为准。但不应该如此。这时候就用到了读写互斥锁。
+
+读写互斥锁的特点：
+ - 可以随便读，多个goroutine同时读，这将可以大大节省时间。
+ - 一个`goroutine`在写的时候，其余`goroutine`啥也不能干，不能读也不能写。这就同普通互斥锁一样，保证了数据安全。
+
+修改代码，改用读写互斥锁：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+var (
+	x      int
+	rwlock sync.RWMutex
+	wg     sync.WaitGroup
+)
+
+// 定义一个读方法
+func read() {
+	// 加读锁
+	rwlock.RLock()
+	// 模拟读消耗的时间为1毫秒
+	time.Sleep(time.Millisecond * 1)
+	// 解读锁
+	rwlock.RUnlock()
+	wg.Done()
+}
+
+// 定义一个写方法
+func write() {
+	// 加写锁
+	rwlock.Lock()
+	// 修改x的值
+	x++
+	// 模拟写操作的时间为10毫秒
+	time.Sleep(time.Millisecond * 10)
+	// 解写锁
+	rwlock.Unlock()
+	wg.Done()
+}
+
+func main() {
+	// 程序开始时间
+	start := time.Now()
+
+	// 模拟写场景,10次
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go write()
+	}
+	//模拟读场景，读10000万次
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go read()
+	}
+	// 两个goroutine都执行完毕
+	wg.Wait()
+
+	// 程序结束时间
+	end := time.Now()
+
+	// 读写共耗时
+	fmt.Println(end.Sub(start))
+}
+```
+
+执行过此结果(效果很明显)：
+
+```go
+117.891745ms
+119.4733ms
+119.208284ms
+113.77037ms
+```
+
+消耗的时间将近快于100倍。
+
+只有在读的操作远大于写的操作时，使用读写锁才能提高性能和效率。
 
 ### sync.Once
 
