@@ -1,5 +1,5 @@
 ---
-title: consul-cluster-binding
+title: consul集群搭建
 date: 2019-07-29 16:59:54
 categories: Consul
 keywords: consul集群搭建
@@ -188,7 +188,7 @@ jw-etcd03  172.19.19.124:8301  alive   server  1.5.3  2         dc1  <all>
 jw-etcd02  172.19.19.123:8301  alive   client  1.5.3  2         dc1  <default>
 ```
 
-#### put
+### put
 
 在`jw-etcd01`(client)机器上`put`一个值：
 
@@ -197,7 +197,7 @@ jw-etcd02  172.19.19.123:8301  alive   client  1.5.3  2         dc1  <default>
 Success! Data written to: name
 ```
 
-#### get
+### get
 
 在`jw-etcd02`机器上`get`一个值：
 
