@@ -114,8 +114,8 @@ func main() {
 
 屏幕输出：
 
-![](/uploads/run echo.png)
+![](/uploads/echo/1.png)
 
 打开浏览器，访问`本机ip:1323`，就可以看到屏幕打印`hello world`。
 
-![](/uploads/echo hello world.png)
+![](/uploads/echo/2.png)
