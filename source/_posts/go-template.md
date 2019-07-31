@@ -12,7 +12,7 @@ description: go语言标准库止http/template
 
 创建一个`hello.html`文件：
 
-```htm
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
