@@ -25,7 +25,52 @@ description: go语言标准库止http/template
 </html>
 ```
 
-### 自定义函数
+创建服务器端：
 
-### 模版嵌套
+```go
+package main
 
+import (
+	"fmt"
+	"html/template"
+	"net/http"
+)
+
+func sayHello(w http.ResponseWriter, r *http.Request) {
+	// 解析指定文件生成模版对象
+	temp, err := template.ParseFiles("./hello.html")
+	if err != nil {
+		fmt.Println("error：", err)
+		return
+	}
+    // 利用给定数据渲染模板，并将结果写入w
+	_ = temp.Execute(w, "江子牙")
+}
+
+func main() {
+	http.HandleFunc("/sayhello", sayHello)
+	err := http.ListenAndServe(":8888", nil)
+	if err != nil {
+		fmt.Println("error：", err)
+	}
+}
+```
+
+测试：
+
+```linux
+[root@jw-etcd01 ~]# curl http://192.168.32.69:8888/sayhello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+</head>
+<body>
+<p>Hello 江子牙</p>
+</body>
+```
+
+我这里只是通过命令浏览，如果通过浏览器打开的话就只是显示`Hello 江子牙`。
+
+## 模版语法
