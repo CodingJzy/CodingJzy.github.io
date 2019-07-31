@@ -12,7 +12,7 @@ description: go语言标准库止http/template
 
 创建一个`hello.html`文件：
 
-```html
+```text
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,7 +83,7 @@ func main() {
 
 修改`hello.html`文件：
 
-```html
+```text
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,7 +165,7 @@ func main() {
 
 注释必须紧挨着(可以多行)：
 
-```html
+```text
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,7 +211,7 @@ $variable := pipeline
 
 修改`hello.html`文件：
 
-```html
+```text
 <!DOCTYPE html>
 <html lang="en">
 <head>
