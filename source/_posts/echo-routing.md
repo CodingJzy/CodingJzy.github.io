@@ -155,7 +155,7 @@ func main() {
 
 ## 组路由
 
-把路由前缀相同的归为一组。这样可以达到为此类路由添加相同的功能，比如认证，频率控制等。
+把路由前缀相同的归为一组。这样可以达到为此类路由添加相同的功能(中间件)，比如认证，频率控制等。
 
 ```go
 package main
@@ -196,3 +196,80 @@ func main() {
 [root@jw-etcd01 ~]# curl -u jiang_wei:ech 192.168.32.69:1323/admin/
 用户名或密码错误
 ```
+
+## 路由命名
+
+## 构造路由
+
+## 路由列表
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/labstack/echo"
+)
+
+func createUser(c echo.Context) error {
+	return nil
+}
+
+func findUser(c echo.Context) error {
+	return nil
+}
+
+func updateUser(c echo.Context) error {
+	return nil
+}
+
+func deleteUser(c echo.Context) error {
+	return nil
+}
+
+func main() {
+	e := echo.New()
+	e.POST("/users", createUser)
+	e.GET("/users", findUser)
+	e.PUT("/users", updateUser)
+	e.DELETE("/users", deleteUser)
+	
+    // json友好格式化输出
+	data, err := json.MarshalIndent(e.Routes(), "", "    ")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(data))
+	}
+
+}
+```
+
+执行结果：
+
+```text
+[
+    {
+        "method": "POST",
+        "path": "/users",
+        "name": "main.createUser"
+    },
+    {
+        "method": "GET",
+        "path": "/users",
+        "name": "main.findUser"
+    },
+    {
+        "method": "PUT",
+        "path": "/users",
+        "name": "main.updateUser"
+    },
+    {
+        "method": "DELETE",
+        "path": "/users",
+        "name": "main.deleteUser"
+    }
+]
+```
+
