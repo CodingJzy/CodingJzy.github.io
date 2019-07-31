@@ -242,7 +242,6 @@ func main() {
 	} else {
 		fmt.Println(string(data))
 	}
-
 }
 ```
 
