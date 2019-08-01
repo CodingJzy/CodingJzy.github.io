@@ -1,7 +1,7 @@
 ---
 title: echo快速开始
 date: 2019-07-30 15:49:29
-categories: Go
+categories: go web框架 Echo
 keywords: echo下载与安装，echo编写hello-world
 description: echo下载与安装，echo编写hello-world
 ---

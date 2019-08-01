@@ -1,7 +1,7 @@
 ---
 title: echo-request
 date: 2019-07-31 16:55:08
-categories: Go
+categories: go web框架 Echo
 keywords: echo的请求对象
 description: echo的请求对象
 ---

@@ -1,7 +1,7 @@
 ---
 title: echo的响应
 date: 2019-08-01 11:18:34
-categories: Go
+categories: go web框架 Echo
 keywords: echo的响应
 description: echo的响应
 ---

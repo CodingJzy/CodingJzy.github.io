@@ -1,7 +1,7 @@
 ---
 title: echo-routing
 date: 2019-07-30 17:12:34
-categories: Go
+categories: go web框架 Echo
 keywords: echo的路由
 description: echo的路由
 ---
