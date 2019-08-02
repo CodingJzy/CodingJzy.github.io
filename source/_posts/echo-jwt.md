@@ -118,3 +118,100 @@ func main() {
 
 ## 服务端(struct)
 
+```go
+package main
+
+import (
+	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	"time"
+)
+
+type User struct {
+	UserName string
+	PassWord string
+}
+
+// 定义一个自定义jwt claims
+type MyJwtClaims struct {
+	Name  string `json:"name"`
+	Admin string `json:"admin"`
+	jwt.StandardClaims
+}
+
+func login(c echo.Context) error {
+	u := new(User)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+	if u.UserName == "jiang_wei" && u.PassWord == "echo" {
+
+		// 实例化一个自定义claims
+		claims := &MyJwtClaims{
+			"jiang_wei",
+			"true",
+			jwt.StandardClaims{
+				IssuedAt:  time.Now().Unix(),
+				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+			},
+		}
+
+		// 执行NewWithClaimsmethod
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+		// 获取完整的签名令牌并将其作为响应发送
+		t, err := token.SignedString([]byte("secret"))
+		if err != nil {
+			return err
+		}
+		return c.JSON(200, echo.Map{
+			"token": t,
+		})
+	}
+	return echo.ErrUnauthorized
+}
+
+func accessible(c echo.Context) error {
+	return c.String(200, "此路由未加认证，随意访问。")
+}
+
+func userInfo1(c echo.Context) error {
+	return c.String(200, " 查看用户信息")
+}
+
+func userInfo2(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	name := claims["name"].(string)
+
+	return c.String(200, "Welcome "+name+"!")
+}
+
+func main() {
+	e := echo.New()
+
+	// 中间件
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// login route
+	e.POST("/login", login)
+
+	// Unauthorized route 不需要认证的路由
+	e.GET("/", accessible)
+
+	// 实例化一个jwt conf对象
+	jwtConf := middleware.JWTConfig{
+		Claims:     &MyJwtClaims{},
+		SigningKey: []byte("secret"),
+	}
+	// authorized route 需要认证的路由
+	g := e.Group("/api/v1", middleware.JWTWithConfig(jwtConf))
+	g.GET("/user_info1", userInfo1)
+	g.GET("/user_info2", userInfo2)
+
+	e.Logger.Debug(e.Start(":1111"))
+}
+```
+
