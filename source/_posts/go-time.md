@@ -1,8 +1,10 @@
+---
 title: go语言的时间包
 date: 2019-08-05 13:45:28
 categories: Go
 keywords: go语言的时间模块的基本用法
 description: go语言的时间模的块基本用法
+---
 
 # time包
 
