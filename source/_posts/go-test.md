@@ -463,7 +463,7 @@ ok      golang/study/split      2.260s
 
 ### 性能比较函数
 
-编写菲薄拉起函数：
+编写斐波拉契函数：
 
 ```go
 package fib
