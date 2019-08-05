@@ -106,7 +106,7 @@ func main() {
 
 ### 访问用户信息url
 
-####　不带token访问用户信息
+#### 不带token访问用户信息
 
 ![](/uploads/echo/8.png)
 
