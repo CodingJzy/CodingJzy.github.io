@@ -234,11 +234,200 @@ Deleted: sha256:91891f9a9bd7ced36d91769a7d510e4b06e93e4d8b8affd1d9c83ae07f1d3bb5
 
 ## 创建镜像
 
+创建镜像的方法有三种：
 
+- 基于已有镜像的容器创建
+- 基于Dockerfile创建
 
-## 导出和载入
+### 基于已有容器创建
 
+这是利用docker的commit命令进行提交，修改的是容器运行时的可写层。原有镜像不会改变，而是创建出一个新的镜像。
 
+这个很少用，而且弊端很大。只是适合学习用的。
+
+### 基于Dockerfile创建
+
+编写Dockerfile创建镜像是最常见的方式，Dockerfile是一个文本。利用一些指令描述基于某个基础镜像创建新镜像的过程。
+
+下面给出一个简单的示例，基于`httpd`镜像。
+
+#### 准备文件
+
+```dockerfile
+# 创建好两个文件
+root@jw-ubuntu01:~/docker/images/apache_image# ls
+Dockerfile.httpd  public_html
+
+# index.html内容如下
+root@jw-ubuntu01:~/docker/images/apache_image# cat public_html/index.html 
+<!DOCTYPE html>
+<html>
+<body>
+	<p>hello docker web:v1 <p>
+</body>
+</html>
+```
+
+#### 编写Dockerfile.httpd文件
+
+```dockerfile
+# 编写dockerfile，内容如下
+root@jw-ubuntu01:~/docker/images/apache_image# vim Dockerfile.httpd 
+FROM httpd:2.4
+  
+COPY ./public_html /usr/local/apache2/htdocs/
+```
+
+#### 执行命令开始构建
+
+```dockerfile
+# 构建web:v1：如果基础镜像不存在，默认会去docker仓库拉取镜像
+root@jw-ubuntu01:~/docker/images/apache_image# docker build -f Dockerfile.httpd -t web:v1 .
+Sending build context to Docker daemon  3.584kB
+Step 1/2 : FROM httpd:2.4
+2.4: Pulling from library/httpd
+f5d23c7fed46: Pull complete 
+b083c5fd185b: Pull complete 
+bf5100a89e78: Pull complete 
+98f47fcaa52f: Pull complete 
+622a9dd8cfed: Pull complete 
+Digest: sha256:dc4c86bc90593c6e4c5b06872a7a363fc7d4eec99c5d6bfac881f7371adcb2c4
+Status: Downloaded newer image for httpd:2.4
+ ---> ee39f68eb241
+Step 2/2 : COPY ./public_html /usr/local/apache2/htdocs/
+ ---> d2294d4f5ce0
+Successfully built d2294d4f5ce0
+Successfully tagged web:v1
+
+# 构建web:v2，提前修改pubilc/index.html内容。
+root@jw-ubuntu01:~/docker/images/apache_image# docker build -f Dockerfile.httpd -t web:v2 .
+Sending build context to Docker daemon  3.584kB
+Step 1/2 : FROM httpd:2.4
+ ---> ee39f68eb241
+Step 2/2 : COPY ./public_html /usr/local/apache2/htdocs/
+ ---> c9945d69f223
+Successfully built c9945d69f223
+Successfully tagged web:v2
+```
+
+#### 查看构建的镜像
+
+```dockerfile
+root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
+web                                             v1                  81e7034c8b70        8 seconds ago        154MB
+web                                             v2                  c9945d69f223        About a minute ago   154MB
+```
+
+#### 运行
+
+加了一些参数，现在看不懂没关系。知道大概意思就行了。
+
+```dockerfile
+root@jw-ubuntu01:~/docker/images/apache_image# docker run -itd --name web1  -p 8001:80 web:v1
+2280702042cb3a5cbb896719bd5da9858f000a1560a02a3058cb3ea802d2ca59
+root@jw-ubuntu01:~/docker/images/apache_image# docker run -itd --name web2  -p 8002:80 web:v2
+a6c62487a191479fe1bdc8c56c1c998b9039c491f5a3dc1456ba3ea701b9bab3
+
+# 查看正在运行的容器
+root@jw-ubuntu01:~/docker/images/apache_image# docker ps |grep web
+a6c62487a191        web:v2                   "httpd-foreground"       56 seconds ago       Up 55 seconds          0.0.0.0:8002->80/tcp                                 we2
+2280702042cb        web:v1                   "httpd-foreground"       About a minute ago   Up About a minute      0.0.0.0:8001->80/tcp                                 we1
+```
+
+#### 访问web应用
+
+```dockerfile
+root@jw-ubuntu01:~/docker/images/apache_image# curl 192.168.32.87:8001
+<!DOCTYPE html>
+<html>
+<body>
+	<p>hello docker web:v1 <p>
+</body>
+</html>
+
+root@jw-ubuntu01:~/docker/images/apache_image# curl 192.168.32.87:8002
+<!DOCTYPE html>
+<html>
+<body>
+	<p>hello docker web:v2 <p>
+</body>
+</html>
+```
+
+上面利用简单的dockerfile，基于httpd基础镜像，构建出了两个web应用，还运行了两个web应用。
+
+## 导出和导入
+
+镜像默认是从docker仓库拉取。如果机器没网，或者需要拷贝到其他机器。我们可以用`save`和`load`命令。
+
+### 导出
+
+#### 单个
+
+```dockerfile
+# 这是一个标准的导出
+docker save web:v1 -o  xxx.tar.gz
+
+# 更小的体积导出
+docker save web:v1 |gzip > yyy.tar.gz
+
+# 比较两种导出方式的大小
+ls -alh
+-rw------- 1 root     root   152M Aug  6 15:16 xxx.tar.gz
+-rw-r--r-- 1 root     root    53M Aug  6 15:17 yyy.tar.gz
+```
+
+#### 多个
+
+```dockerfile
+# 标准导出
+ docker save web:v1 web:v2  > xy.tar.gz
+
+# 更小体积导出
+docker save web:v1 web:v2 |gzip > xy1.tar.gz
+
+# 比较两种导出方式的大小
+ls -alh
+-rw-r--r-- 1 root     root    53M Aug  6 15:20 xy1.tar.gz
+-rw-r--r-- 1 root     root   152M Aug  6 15:19 xy.tar.gz
+```
+
+### 导入
+
+```dockerfile
+# 查看本地是否存在
+root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
+web                                             v1                  81e7034c8b70        About an hour ago   154MB
+web                                             v2                  c9945d69f223        About an hour ago   154MB
+
+# 强制删除，因为两个镜像正在被两个容器运行着使用。
+root@jw-ubuntu01:~/docker/images/apache_image# docker rmi -f web:v1 web:v2
+Untagged: web:v1
+Untagged: web:v2
+
+# 没了
+root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
+
+# 执行命令导入
+root@jw-ubuntu01:~/docker/images/apache_image# docker load < xy1.tar.gz 
+Loaded image: web:v1
+Loaded image: web:v2
+
+# 验证本地是否存root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
+web                                             v1                  81e7034c8b70        About an hour ago   154MB
+web                                             v2                  c9945d69f223        About an hour ago   154MB
+在
+```
 
 ## 上传
 
+同github仓库一样，可以对镜像镜像`pull`和`push`操作。
+
+默认会上传到docker官方仓库。完整命令为：
+
+```dockerfile
+docker push registry_host:registry_port/repository:tag
+
+# 例如
+docker push 172.19.19.252:18005/nginx:t1
+```
