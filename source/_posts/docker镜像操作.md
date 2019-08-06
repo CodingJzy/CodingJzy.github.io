@@ -413,10 +413,10 @@ root@jw-ubuntu01:~/docker/images/apache_image# docker load < xy1.tar.gz
 Loaded image: web:v1
 Loaded image: web:v2
 
-# 验证本地是否存root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
+# 验证本地是否存在
+root@jw-ubuntu01:~/docker/images/apache_image# docker images|grep web
 web                                             v1                  81e7034c8b70        About an hour ago   154MB
 web                                             v2                  c9945d69f223        About an hour ago   154MB
-在
 ```
 
 ## 上传
