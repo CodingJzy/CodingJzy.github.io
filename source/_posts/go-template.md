@@ -1,9 +1,9 @@
 ---
-title: go语言标准库止http/template
+title: go语言标准库之http/template
 date: 2019-07-31 12:16:19
 categories: Go
-keywords: go语言标准库止http/template
-description: go语言标准库止http/template
+keywords: go语言标准库之http/template
+description: go语言标准库之http/template
 ---
 
 # template
