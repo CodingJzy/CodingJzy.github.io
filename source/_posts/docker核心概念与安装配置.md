@@ -221,3 +221,8 @@ systemctl daemon-reload  && systemctl restart docker
 ### 添加用户到docker用户组
 
 为了避免每次使用docker命令时都需要切换到`root`身份。可以将当前用户加入到安装中自动创建的docker用户组。
+
+```linux
+usermod -aG docker ${USER}
+```
+
