@@ -78,13 +78,21 @@ var isLogin bool
 每声明一个变量都需要一个`var`会很繁琐，所以还有一种批量声明的方式：
 
 ```go
+package main
+
+import "fmt"
+
 var (
-	a string		// 字符串
-    b int           // 数字
-    c float64		// 浮点数
-    d bool			// 布尔
-    e [...]string	// 数组
+	a string    // 字符串
+	b int       // 数字
+	c float64   // 浮点数
+	d bool      // 布尔
+	e [3]string // 数组
 )
+
+func main() {
+	fmt.Println(a, b, c, d, e)
+}
 ```
 
 ### 变量的初始化
@@ -122,14 +130,22 @@ var age = 21
 
 #### 批量式
 
-```go
+```
+package main
+
+import "fmt"
+
 var (
 	a = 1
-    b = 9.99
-    c = "江子牙"
+	b = 9.99
+	c = "江子牙"
 )
 
-var a, b = 3, "呵呵"
+func main() {
+	var d, e = 1, "呵呵"
+	fmt.Println(a, b, c, d, e)
+}
+
 ```
 
 #### 短变量式：
@@ -139,15 +155,13 @@ var a, b = 3, "呵呵"
 ```go
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // 全局变量m
 var m = 100
 
 func main() {
-    // 使用短变量方式声明局部变量n
+	// 使用短变量方式声明局部变量n
 	n := 10
 	fmt.Println(m, n)
 }
@@ -160,17 +174,20 @@ func main() {
 ```go
 package main
 
+import "fmt"
+
 func sum() (int, int) {
 	return 100, 200
 }
 
 func main() {
-    // 调用sum函数返回100给变量a
-    a, _ := sum()
-     // 调用sum函数返回200给变量b
-    _, b := sum()
-     // 调用sum函数返回100给变量c, 200给变量d
-    c, d := sum()
+	// 调用sum函数返回100给变量a
+	a, _ := sum()
+	// 调用sum函数返回200给变量b
+	_, b := sum()
+	// 调用sum函数返回100给变量c, 200给变量d
+	c, d := sum()
+	fmt.Println(a, b, c, d)
 }
 ```
 
@@ -222,43 +239,75 @@ go语言现阶段没有枚举，但是可以用常量配合iota来模拟枚举�
 比如：
 
 ```go
+package main
+
+import "fmt"
+
 const (
-		n1 = iota //0
-		n2        //1
-		n3        //2
-		n4        //3
+	n1 = iota //0
+	n2        //1
+	n3        //2
+	n4        //3
 )
+
+func main() {
+	fmt.Println(n1, n2, n3, n4)
+}
 ```
 
 使用`_`跳过某个值：
 
 ```go
+package main
+
+import "fmt"
+
 const (
-		n1 = iota //0
-		n2        //1
-		_
-		n4        //3
+	n1 = iota //0
+	n2        //1
+	_
+	n4 //3
 )
+
+func main() {
+	fmt.Println(n1, n2, n4)
+}
 ```
 
 插队：
 
 ```go
+package main
+
+import "fmt"
+
 const (
-		n1 = iota //0
-		n2 = 100  //100
-		n3 = iota //2
-		n4        //3
+	n1 = iota //0
+	n2 = 100  //100
+	n3 = iota //2
+	n4        //3
 )
-const n5 = iota    //0
+const n5 = iota //0
+
+func main() {
+	fmt.Println(n1, n2, n3, n4, n5)
+}
 ```
 
 多个iota定义在一行：
 
 ```go
+package main
+
+import "fmt"
+
 const (
-		a, b = iota + 1, iota + 2 //1, 2
-		c, d                      //2, 3
-		e, f                      //3, 4
+	a, b = iota + 1, iota + 2 //1, 2
+	c, d                      //2, 3
+	e, f                      //3, 4
 )
+
+func main() {
+	fmt.Println(a, b, c, d, e, f)
+}
 ```
