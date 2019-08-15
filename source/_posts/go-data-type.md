@@ -1,3 +1,11 @@
+---
+title: go语言的基本类型
+date: 2019-08-15 11:14:25
+categories: Go
+keywords: go语言的基本类型
+description: go语言的基本类型
+---
+
 # 基本数据类型
 
 ## 字符串
