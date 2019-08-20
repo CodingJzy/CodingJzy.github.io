@@ -1,7 +1,7 @@
 ---
 title: go语言的内置包之strconv
 date: 2019-07-23 17:33:21
-catecories: Go
+categories: Go
 ---
 
 # go语言内置包之strconv
