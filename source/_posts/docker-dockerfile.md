@@ -374,7 +374,7 @@ HEALTHCHECK [OPTIONS] CMD command
 HEALTHCHECK NONE
 
 # 参数
---start-period=DURATION 默认0s：启动时间，如果指定这个参数， 则必须大于 0s ；为需要启动的容器提供了初始化的时间段， 在这个时间段内如果检查失败， 则不会记录失败次数。 如果在启动时间内成功执行了健康检查， 则容器将被视为已经启动， 如果在启动时间内再次出现检查失败， 则会记录失败次数。
+--start-period=DURATION 默认0s：启动时间，如果指定这个参数，则必须大于 0s ；为需要启动的容器提供了初始化的时间段，在这个时间段内如果检查失败，则不会记录失败次数。 如果在启动时间内成功执行了健康检查，则容器将被视为已经启动，如果在启动时间内再次出现检查失败，则会记录失败次数。
 --interval=duration 默认30s:经过多久检查一次
 --timeout=dauration 默认30s：每次检查等待结果的超时设置
 --retries=N 默认3：如果失败了，重试的次数才最终确定失败
@@ -384,11 +384,113 @@ HEALTHCHECK NONE
 
 ```dockerfile
 HEALTHCHECK --start-period=20s \
-    CMD curl -f http://localhost:8228/health || exit 1、
+    CMD curl -f http://localhost:8228/health || exit 1
 ```
 
-## 创建镜像
+#### RUN
+
+运行指定命令。
+
+语法：
+
+```dockerfile
+# 在shell终端中执行命令，即/bin/sh -c，推荐使用此方式
+RUN <command>
+
+# 命令会解析为json数组，使用exec执行，不会启动新的shell环境，也就是不会启动新的进程
+RUN ["executable","param1","param2"]
+```
+
+每条指令将在当前镜像基础上执行命令，并提交为新的镜像层，当命令较长时，可以使用`\`来换行。`cmd1 && cmd2` 代表 一次性执行两条命令。
+
+#### CMD
+
+指定启动容器时默认执行的命令。
+
+语法：
+
+```dockerfile
+# 相当于执行executable param1 param2，不会启动一个新的终端，推荐此方式。
+CMD ["executable","param1","param2"]
+
+# 在默认的shell中执行，提供给需要交互的应用，少用。
+CMD command param1 param2
+
+# 提供给ENTRYPOINT的默认参数
+CMD ["param1","param2"]
+```
+
+每个dockerfile只能有一个`CMD`，如果指定了多条，只有最后一条生效。
+
+如果用户启动容器的时候手动指定了运行的命令，则会覆盖CMD指定的命令。
+
+#### ADD
+
+添加内容到镜像、
+
+语法：
+
+```dockerfile
+ADD <src> <dest>
+```
+
+其中，`src`可以是dockerfile所在目录的相对路径(文件或目录)，也可以是一个`URL`，或者一个`tar`文件，会自动解压为目录。
+
+#### COPY
+
+复制内容到镜像，与`ADD`类似。
+
+语法：
+
+```dock
+COPY <src> <dest>
+```
+
+## 构建镜像
+
+语法：
+
+```dock
+docker build -t image:v1 .
+```
+
+该命令会读取当前的Dockerfilke文件，并将该文件路径下的所有数据作为上下文(Context)发送到docker server端，服务的校验文件内指令的个时候，逐行执行命令。每一个指令会生成一层新的镜像。创建成功后，会返回最终镜像的ID。
+
+如果上下文过大，会导致发送大量数据给服务端，延缓创建过程，因此除非是生成镜像所必须的文件，不然最好不要放到上下文路径下。如果使用非上下文路径下的Dockerfile文件，可以通过`-f`指定。例如：
+
+```dockerfile
+docker build -f /home/dockerfile -t image:v2 .
+```
+
+注意不要少了最后一个`.`，它代表以当前路径为上下文，如果构建镜像的文件不在当前目录，也可以指定其他路径为当前构建镜像所需要的上下文。例如：
+
+```dockerfile
+docker build -f /home/dockerfile -t image:v3 /home/context/
+```
+
+#### 命令选项
+
+使用`docker build`命令构建镜像时，还支持一些选项来调整创建镜像过程的行为。
+
+- `--build-arg list`：添加创建时变量，给dockerfile中的`ARG`变量赋值或者覆盖
+- `--force-rm`：总是删除中间过程的容器
+- `--label list`：添加一些镜像的元数据标签
+- `--network string`：指定`RUN`命令时的网络模式
+- `--no-cache`：创建镜像时，不使用缓存
+- `--rm`：创建成功后自动删除中间过程容器，默认为真
 
 # cmd vs entrypoint
 
+
+
 # 优化dockerfile
+
+## 基础镜像
+
+## .dockerignore
+
+## 多阶段构建
+
+## 及时清除缓存和缓存文件
+
+## 构建顺序
