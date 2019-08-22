@@ -271,6 +271,27 @@ ENV username=jiang_wei \
 docker run mysql -e password=1 -e username=2
 ```
 
+#### CMD
+
+指定启动容器时默认执行的命令。
+
+语法：
+
+```dockerfile
+# 相当于执行executable param1 param2，不会启动一个新的终端，推荐此方式。
+CMD ["executable","param1","param2"]
+
+# 在默认的shell中执行，提供给需要交互的应用，少用。
+CMD command param1 param2
+
+# 提供给ENTRYPOINT的默认参数
+CMD ["param1","param2"]
+```
+
+每个dockerfile只能有一个`CMD`，如果指定了多条，只有最后一条生效。
+
+如果用户启动容器的时候手动指定了运行的命令，则会覆盖CMD指定的命令。
+
 #### ENTRYPOINT
 
 指定容器启动时最先执行的命令，也是入口命令。
@@ -293,7 +314,21 @@ ENTRYPOINT command param1 param2
 docker run --entrypoint ls
 ```
 
-该命令和`CMD`有着对比，详细看后面。
+该命令和`CMD`有着对比。
+
+相同点：
+
+- **都可以指定shell或exec函数调用的方式执行命令**
+- **多个CMD或ENTRYPOINT指令时，只有最后一个生效**
+
+不同点：
+
+- **CMD指令指定的容器启动时命令可以被docker run指定的命令覆盖，而ENTRYPOINT指令指定的命令不能被覆盖，而是将docker run指定的参数当做ENTRYPOINT指定命令的参数。除非加`--entrypoint`**
+- **CMD指令可以为ENTRYPOINT指令设置默认参数，而且可以被docker run指定的参数覆盖**
+
+另外注意一点：
+
+**CMD指令为ENTRYPOINT指令提供默认参数是基于镜像层次结构生效的，而不是基于是否在同个Dockerfile文件中。意思就是说，如果Dockerfile指定基础镜像中是ENTRYPOINT指定的启动命令，则该Dockerfile中的CMD依然是为基础镜像中的ENTRYPOINT设置默认参数。除非当前dockerfile，重新定义entrypoint。**
 
 #### VOLUME
 
@@ -403,26 +438,7 @@ RUN ["executable","param1","param2"]
 
 每条指令将在当前镜像基础上执行命令，并提交为新的镜像层，当命令较长时，可以使用`\`来换行。`cmd1 && cmd2` 代表 一次性执行两条命令。
 
-#### CMD
 
-指定启动容器时默认执行的命令。
-
-语法：
-
-```dockerfile
-# 相当于执行executable param1 param2，不会启动一个新的终端，推荐此方式。
-CMD ["executable","param1","param2"]
-
-# 在默认的shell中执行，提供给需要交互的应用，少用。
-CMD command param1 param2
-
-# 提供给ENTRYPOINT的默认参数
-CMD ["param1","param2"]
-```
-
-每个dockerfile只能有一个`CMD`，如果指定了多条，只有最后一条生效。
-
-如果用户启动容器的时候手动指定了运行的命令，则会覆盖CMD指定的命令。
 
 #### ADD
 
@@ -478,10 +494,6 @@ docker build -f /home/dockerfile -t image:v3 /home/context/
 - `--network string`：指定`RUN`命令时的网络模式
 - `--no-cache`：创建镜像时，不使用缓存
 - `--rm`：创建成功后自动删除中间过程容器，默认为真
-
-# cmd vs entrypoint
-
-
 
 # 优化dockerfile
 
