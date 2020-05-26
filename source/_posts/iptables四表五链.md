@@ -39,19 +39,19 @@ RAW 表只使用在PREROUTING链和OUTPUT链上,因为优先级最高，从而�
 
 如下图：
 
-![1590461504602](D:\code\codingjzy.github.io\source\uploads\iptables\1590461504602.png)
+![1590461504602](/uploads/iptables/1590461504602.png)
 
 ## 表与链对应关系
 
  iptables中表和链的对应关系如下：
 
-![1590461552065](D:\code\codingjzy.github.io\source\uploads\iptables\1590461552065.png)
+![1590461552065](/uploads/iptables/1590461552065.png)
 
 ## 数据包流程
 
 一个数据包到达时,是怎么依次穿过各个链和表的（图）。 
 
-![1590461589291](D:\code\codingjzy.github.io\source\uploads\iptables\1590461589291.png)
+![1590461589291](/uploads/iptables/1590461589291.png)
 
 ### 分析
 
