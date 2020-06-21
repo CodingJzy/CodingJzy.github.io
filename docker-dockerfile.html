@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="使用dockerfile创建镜像" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用dockerfile创建镜像">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dockerfile">
+<meta property="og:url" content="https://jiangziya.top/docker-dockerfile.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="使用dockerfile创建镜像">
+<meta property="article:published_time" content="2019-08-20T14:08:45.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.852Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="使用dockerfile创建镜像">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/docker-dockerfile.html"/>
+
+
+
+
+
+  <title>Dockerfile | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/docker-dockerfile.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Dockerfile</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T22:08:45+08:00">
+                2019-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  使用dockerfile创建镜像
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h1><p>Dockerfile是一个文本格式的配置文件，我们可以通过编写dockerfile构建自己的镜像。</p>
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>dockerfile由一行行命令语组成，支持<code>#</code>注释。</p>
+<ul>
+<li>基础镜像</li>
+<li>维护中信息</li>
+<li>构建镜像的指令</li>
+<li>容器启动执行指令</li>
+</ul>
+<p>先来看个示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>-slim as build</span><br><span class="line"></span><br><span class="line"><span class="keyword">LABEL</span><span class="bash"> author=jiang_wei email=jw19961019@gmail.com</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># anchore version</span></span><br><span class="line"><span class="keyword">ARG</span> ANCHORE=<span class="number">0.4</span></span><br><span class="line"><span class="keyword">ARG</span> ANCHORE_CLI=<span class="number">0.4</span>.<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># change mirrors</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> ./build/configs/sources.list /etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /build</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">set</span> -ex &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get update -y &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get install -y gcc git &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;git clone anchore&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;"</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    git <span class="built_in">clone</span> -b <span class="variable">$&#123;ANCHORE&#125;</span> https://github.com/anchore/anchore-engine.git &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;python wheels&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;"</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">cd</span> anchore-engine &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span>  <span class="string">"anchorecli==<span class="variable">$&#123;ANCHORE_CLI&#125;</span>"</span> &gt;&gt; ./requirements.txt &amp;&amp; \</span></span><br><span class="line"><span class="bash">    pip3 wheel -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com --wheel-dir=/build/wheels  . &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;copy config&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;"</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir /build/configs &amp;&amp; \ </span></span><br><span class="line">    cp ./conf/default_config.yaml /build/configs/default_config.yaml &amp;&amp; \</span><br><span class="line">    cp ./docker-compose.yaml /build/configs/docker-compose.yaml &amp;&amp; \</span><br><span class="line">    cp ./docker-compose-dev.yaml /build/configs/docker-compose-dev.yaml &amp;&amp; \</span><br><span class="line">    cp ./docker-<span class="keyword">entrypoint</span>.<span class="bash">sh /build/configs/docker-entrypoint.sh &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"clean cache"</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get autoremove -y gcc git &amp;&amp; apt-get autoclean &amp;&amp; apt-get clean  &amp;&amp; apt-get autoremove &amp;&amp; rm -rf /var/cache/apt/ &amp;&amp; \</span></span><br><span class="line"><span class="bash">    rm -rf /build/anchore-engine/</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> tar -z -c -v -C /build -f /build.tgz .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>-slim</span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=build /build /build</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=build /etc/apt/sources.list /etc/apt/sources.list</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> ./build/deps/skopeo /usr/bin/</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> ./build/configs/skopeo-policy.json /etc/containers/policy.json</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> LANG=C.UTF-<span class="number">8</span> LC_ALL=C.UTF-<span class="number">8</span> \</span><br><span class="line">    ANCHORE_CONFIG_DIR=/config \</span><br><span class="line">    ANCHORE_SERVICE_DIR=/anchore_service \</span><br><span class="line">    ANCHORE_LOG_LEVEL=INFO \</span><br><span class="line">    ANCHORE_ENABLE_METRICS=false \</span><br><span class="line">    ANCHORE_INTERNAL_SSL_VERIFY=false \</span><br><span class="line">    ANCHORE_WEBHOOK_DESTINATION_URL=null \</span><br><span class="line">    ANCHORE_FEEDS_ENABLED=true \</span><br><span class="line">    ANCHORE_FEEDS_SELECTIVE_ENABLED=true \</span><br><span class="line">    ANCHORE_FEEDS_SSL_VERIFY=true \</span><br><span class="line">    ANCHORE_ENDPOINT_HOSTNAME=localhost \</span><br><span class="line">    ANCHORE_EVENTS_NOTIFICATIONS_ENABLED=false \</span><br><span class="line">    ANCHORE_FEED_SYNC_INTERVAL_SEC=<span class="number">21600</span> \</span><br><span class="line">    ANCHORE_EXTERNAL_PORT=null \</span><br><span class="line">    ANCHORE_EXTERNAL_TLS=false \</span><br><span class="line">    ANCHORE_AUTHZ_HANDLER=native \</span><br><span class="line">    ANCHORE_EXTERNAL_AUTHZ_ENDPOINT=null \</span><br><span class="line">    ANCHORE_ADMIN_PASSWORD=foobar \</span><br><span class="line">    ANCHORE_ADMIN_EMAIL=admin@myanchore \</span><br><span class="line">    ANCHORE_HOST_ID=<span class="string">"anchore-quickstart"</span> \</span><br><span class="line">    ANCHORE_DB_PORT=<span class="number">5432</span> \</span><br><span class="line">    ANCHORE_DB_NAME=postgres \</span><br><span class="line">    ANCHORE_DB_USER=postgres \</span><br><span class="line">    SET_HOSTID_TO_HOSTNAME=false \</span><br><span class="line">    ANCHORE_CLI_USER=admin \</span><br><span class="line">    ANCHORE_CLI_PASS=foobar \</span><br><span class="line">    ANCHORE_SERVICE_PORT=<span class="number">8228</span> \</span><br><span class="line">    ANCHORE_CLI_URL=<span class="string">"http://localhost:8228"</span> \</span><br><span class="line">    ANCHORE_FEEDS_URL=<span class="string">"https://ancho.re/v1/service/feeds"</span> \</span><br><span class="line">    ANCHORE_FEEDS_CLIENT_URL=<span class="string">"https://ancho.re/v1/account/users"</span> \</span><br><span class="line">    ANCHORE_FEEDS_TOKEN_URL=<span class="string">"https://ancho.re/oauth/token"</span> \</span><br><span class="line">    ANCHORE_GLOBAL_CLIENT_READ_TIMEOUT=<span class="number">0</span> \</span><br><span class="line">    ANCHORE_GLOBAL_CLIENT_CONNECT_TIMEOUT=<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> $&#123;ANCHORE_SERVICE_PORT&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">set</span> -ex &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get update -y &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get install -y curl &amp;&amp; \</span></span><br><span class="line"><span class="bash">    groupadd --gid 1000 anchore &amp;&amp; \</span></span><br><span class="line"><span class="bash">    useradd --uid 1000 --gid anchore --shell /bin/bash --create-home anchore &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir <span class="variable">$&#123;ANCHORE_SERVICE_DIR&#125;</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir /config &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p /var/<span class="built_in">log</span>/anchore &amp;&amp; chown -R anchore:anchore /var/<span class="built_in">log</span>/anchore &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p /var/run/anchore &amp;&amp; chown -R anchore:anchore /var/run/anchore &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p /analysis_scratch &amp;&amp; chown -R anchore:anchore /analysis_scratch &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p /workspace &amp;&amp; chown -R anchore:anchore /workspace &amp;&amp; \</span></span><br><span class="line"><span class="bash">    mkdir -p <span class="variable">$&#123;ANCHORE_SERVICE_DIR&#125;</span> &amp;&amp; chown -R anchore:anchore /anchore_service &amp;&amp; \</span></span><br><span class="line"><span class="bash">    cp /build/configs/default_config.yaml /config/config.yaml &amp;&amp; \</span></span><br><span class="line"><span class="bash">    cp /build/configs/docker-compose.yaml /docker-compose.yaml &amp;&amp; \</span></span><br><span class="line"><span class="bash">    cp /build/configs/docker-compose-dev.yaml /docker-compose-dev.yaml &amp;&amp; \</span></span><br><span class="line"><span class="bash">    cp /build/configs/docker-entrypoint.sh /docker-entrypoint.sh &amp;&amp; \</span></span><br><span class="line"><span class="bash">    md5sum /config/config.yaml &gt; /config/build_installed &amp;&amp; \</span></span><br><span class="line"><span class="bash">    chmod +x /docker-entrypoint.sh &amp;&amp; \</span></span><br><span class="line"><span class="bash">    pip3 install --no-index --find-links=./ /build/wheels/*.whl &amp;&amp; \</span></span><br><span class="line"><span class="bash">    chmod +x /usr/bin/skopeo &amp;&amp; \</span></span><br><span class="line"><span class="bash">    chmod 777 /etc/containers/policy.json &amp;&amp; \</span></span><br><span class="line"><span class="bash">    rm -rf /build /root/.cache &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"clean cache"</span> &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apt-get autoclean &amp;&amp; apt-get clean  &amp;&amp; apt-get autoremove &amp;&amp; rm -rf /var/cache/apt/</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">HEALTHCHECK</span><span class="bash"> --start-period=20s \</span></span><br><span class="line"><span class="bash">    CMD curl -f http://localhost:8228/health || <span class="built_in">exit</span> 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> anchore:anchore</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">"/docker-entrypoint.sh"</span>]</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"anchore-manager"</span>, <span class="string">"service"</span>, <span class="string">"start"</span>, <span class="string">"--all"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>看不懂没关系，哈哈！！！看下面的指令介绍。</p>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><p>指令分为两种，包括<code>配置指令</code>、<code>操作指令</code>。</p>
+<h4 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h4><p>指定构建自定义镜像的基础镜像。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> &lt;image&gt; [as &lt;name&gt;]</span><br><span class="line"><span class="keyword">FROM</span> &lt;image&gt;:&lt;tag&gt; [as &lt;name&gt;]</span><br><span class="line"><span class="keyword">FROM</span> &lt;image&gt;:&lt;digest&gt; [as &lt;name&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 没有指定tag，就默认latest</span></span><br><span class="line"><span class="keyword">FROM</span> centos</span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">18.04</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 取别名，下一个FROM用的到</span></span><br><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span>-slim as build</span><br></pre></td></tr></table></figure>
+
+<p>任何一个dockerfile文件第一行指令必须为<code>FROM</code>，注释除外。</p>
+<p>可以为基础镜像取别名，多用在构建多阶镜像。</p>
+<h4 id="ARG"><a href="#ARG" class="headerlink" title="ARG"></a>ARG</h4><p>定义构建镜像过程中使用的变量。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> &lt;name&gt;[=&lt;default value&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 声明python</span></span><br><span class="line"><span class="keyword">ARG</span> python</span><br><span class="line"></span><br><span class="line"><span class="comment"># 声明go版本为1.12(带有默认值)</span></span><br><span class="line"><span class="keyword">ARG</span> GOVERSION=<span class="number">1.12</span></span><br></pre></td></tr></table></figure>
+
+<p>在执行<code>docker build</code>命令构建镜像的时候，可以通过参数<code>--build-arg k1=v1 --build-arg k2=v2</code>来为变量赋值，也会覆盖dockerfile定义的默认值。镜像构建成功后，该变量将不再保存。</p>
+<p>docker内置了一些默认的ARG变量，用户无需声明而直接使用。比如，在公司内网经常遇到代理的问题。可以通过设置这几个(不区分大小写)：</p>
+<ul>
+<li><code>HTTP_PROXY</code></li>
+<li><code>HTTS_PROXY</code></li>
+<li><code>FTP_PROXY</code></li>
+<li><code>NO_PROXY</code></li>
+</ul>
+<h4 id="LABEL"><a href="#LABEL" class="headerlink" title="LABEL"></a>LABEL</h4><p>为镜像元数据标签信息，这些信息可以用来辅助过滤特定的镜像。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LABEL</span><span class="bash"> k1=v1 k2=v2 ...</span></span><br><span class="line"><span class="keyword">LABEL</span><span class="bash"> k3=v3</span></span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LABEL</span><span class="bash"> author=jiang_wei email=jw19961019@gmail.com</span></span><br><span class="line"><span class="keyword">LABEL</span><span class="bash"> description=<span class="string">"dockerfile"</span></span></span><br></pre></td></tr></table></figure>
+
+<p>可以有多个<code>LABEL</code>，但是为了尽量减少镜像构建层数，应该写一起。</p>
+<h4 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h4><p>声明容器运行时监听的端口，只是起到声明作用，并不会自动完成映射。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPOSE</span> &lt;port&gt; [&lt;port&gt;/&lt;protocol&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPOSE</span> <span class="number">80</span> <span class="number">81</span>/tcp</span><br></pre></td></tr></table></figure>
+
+<p>如果要将端口映射出来，启动容器时，可以加<code>-P</code>参数。docker主机就会默认分配一个宿主机的随机端口映射到声明的一个端口上。或者加<code>-p</code>参数，指定宿主机的某个端口映射到声明的某个端口。比如将宿主机的8080映射到nginx容器的80：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -p 8080:80 -p 8181:81 nginx</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h4><p>指定环境变量，在镜像生成过程中会被后续的<code>RUN</code>指令使用，在镜像启动的容器中也会存在，不会像<code>ARG</code>那样。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ENV</span> k1 v1</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> K2=V2 K3=V3</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># \ 代表换行</span></span><br><span class="line"><span class="keyword">ENV</span> username=jiang_wei \</span><br><span class="line">    password=root \</span><br><span class="line">    host=localhost \</span><br><span class="line">    port=<span class="number">3306</span> \</span><br><span class="line">    database=test</span><br></pre></td></tr></table></figure>
+
+<p>同样，为了减少镜像层数，应该使用少的<code>ENV</code>声明。</p>
+<p>指定的环境变量可以被运行时指定的覆盖，比如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> mysql -e password=1 -e username=2</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h4><p>指定启动容器时默认执行的命令。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 相当于执行executable param1 param2，不会启动一个新的终端，推荐此方式。</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"executable"</span>,<span class="string">"param1"</span>,<span class="string">"param2"</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在默认的shell中执行，提供给需要交互的应用，少用。</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> <span class="built_in">command</span> param1 param2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 提供给ENTRYPOINT的默认参数</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"param1"</span>,<span class="string">"param2"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>每个dockerfile只能有一个<code>CMD</code>，如果指定了多条，只有最后一条生效。</p>
+<p>如果用户启动容器的时候手动指定了运行的命令，则会覆盖CMD指定的命令。</p>
+<h4 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT"></a>ENTRYPOINT</h4><p>指定容器启动时最先执行的命令，也是入口命令。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># exec调用执行</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">"executable"</span>,<span class="string">"param1"</span>,<span class="string">"param2"</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># shell中执行</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> <span class="built_in">command</span> param1 param2</span></span><br></pre></td></tr></table></figure>
+
+<p>每个dockerfile只能有一个该指令，当存在多个时，以最后一条为准。</p>
+<p>运行时，也可被<code>--entrypoint</code>参数覆盖，比如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> --entrypoint ls</span></span><br></pre></td></tr></table></figure>
+
+<p>该命令和<code>CMD</code>有着对比。</p>
+<p>相同点：</p>
+<ul>
+<li><strong>都可以指定shell或exec函数调用的方式执行命令</strong></li>
+<li><strong>多个CMD或ENTRYPOINT指令时，只有最后一个生效</strong></li>
+</ul>
+<p>不同点：</p>
+<ul>
+<li><strong>CMD指令指定的容器启动时命令可以被docker run指定的命令覆盖，而ENTRYPOINT指令指定的命令不能被覆盖，而是将docker run指定的参数当做ENTRYPOINT指定命令的参数。除非加<code>--entrypoint</code></strong></li>
+<li><strong>CMD指令可以为ENTRYPOINT指令设置默认参数，而且可以被docker run指定的参数覆盖</strong></li>
+</ul>
+<p>另外注意一点：</p>
+<p><strong>CMD指令为ENTRYPOINT指令提供默认参数是基于镜像层次结构生效的，而不是基于是否在同个Dockerfile文件中。意思就是说，如果Dockerfile指定基础镜像中是ENTRYPOINT指定的启动命令，则该Dockerfile中的CMD依然是为基础镜像中的ENTRYPOINT设置默认参数。除非当前dockerfile，重新定义entrypoint。</strong></p>
+<h4 id="VOLUME"><a href="#VOLUME" class="headerlink" title="VOLUME"></a>VOLUME</h4><p>创建一个数据卷挂载点。</p>
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">VOLUME</span><span class="bash"> [<span class="string">"/data"</span>]</span></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> [<span class="string">"/path1"</span>,<span class="string">"/path2"</span>]</span></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> /var/<span class="built_in">log</span></span></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> /var/db /var/nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：数据卷也有多种，有容器运行时指定数据卷或者数据卷容器等。</p>
+<p>这个只是其中一种，通过此方式创建的数据卷挂载点，并不友好。</p>
+<p>它只是会在容器运行时，把容器的挂载卷目录挂到宿主机上的一个随机目录，我们无法指定指定主机上对应的目录。况且如果容器销毁了，重新启动一个容器的时候，会重新挂载随机目录，没多大意义。当然，容器停止再次启动时，还是会用已经挂到宿主机上的卷。</p>
+<h4 id="USER"><a href="#USER" class="headerlink" title="USER"></a>USER</h4><p>指定运行容器时的用户名或uid，后续的RUN等指令也会使用指定的用户身份。</p>
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USER</span> postgres</span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> filebeat</span><br></pre></td></tr></table></figure>
+
+<h4 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h4><p>设置工作目录，对后续的<code>RUN CMD ENTRYPOINT COPY ADDs</code>生效，如果此目录不存在就会创建。</p>
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /home</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /filebeat</span></span><br></pre></td></tr></table></figure>
+
+<p>为避免出错，推荐后面指定的是绝对路径。</p>
+<h4 id="ONBUILD"><a href="#ONBUILD" class="headerlink" title="ONBUILD"></a>ONBUILD</h4><p>这个指定只对当前镜像的子镜像生效，就是以该镜像为基础镜像的其他镜像，构建的时候，会执行此命令。</p>
+<p>比如，当前A镜像的dockerfile：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ONBUILD</span> <span class="keyword">RUN</span><span class="bash"> ls</span></span><br></pre></td></tr></table></figure>
+
+<p>这个命令在A镜像构建过程和启动A镜像的一个容器时并不会执行。</p>
+<p>在B镜像的dockerfile：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> A</span><br></pre></td></tr></table></figure>
+
+<p>此时，在构建B镜像时，因为基于了A镜像构建，而又声明了<code>ONBUILD</code>。会执行<code>ls</code>这个命令，隐式构建。</p>
+<h4 id="HEALTHCHECK"><a href="#HEALTHCHECK" class="headerlink" title="HEALTHCHECK"></a>HEALTHCHECK</h4><p>配置启动的容器如何进行健康检查。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据所执行命令的返回值为0来判断</span></span><br><span class="line"><span class="keyword">HEALTHCHECK</span><span class="bash"> [OPTIONS] CMD <span class="built_in">command</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁止健康检查</span></span><br><span class="line"><span class="keyword">HEALTHCHECK</span><span class="bash"> NONE</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 参数</span></span><br><span class="line">--start-period=DURATION 默认<span class="number">0</span>s：启动时间，如果指定这个参数，则必须大于 <span class="number">0</span>s ；为需要启动的容器提供了初始化的时间段，在这个时间段内如果检查失败，则不会记录失败次数。 如果在启动时间内成功执行了健康检查，则容器将被视为已经启动，如果在启动时间内再次出现检查失败，则会记录失败次数。</span><br><span class="line">--interval=duration 默认<span class="number">30</span>s:经过多久检查一次</span><br><span class="line">--timeout=dauration 默认<span class="number">30</span>s：每次检查等待结果的超时设置</span><br><span class="line">--retries=N 默认<span class="number">3</span>：如果失败了，重试的次数才最终确定失败</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">HEALTHCHECK</span><span class="bash"> --start-period=20s \</span></span><br><span class="line"><span class="bash">    CMD curl -f http://localhost:8228/health || <span class="built_in">exit</span> 1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="RUN"><a href="#RUN" class="headerlink" title="RUN"></a>RUN</h4><p>运行指定命令。</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在shell终端中执行命令，即/bin/sh -c，推荐使用此方式</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> &lt;<span class="built_in">command</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 命令会解析为json数组，使用exec执行，不会启动新的shell环境，也就是不会启动新的进程</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> [<span class="string">"executable"</span>,<span class="string">"param1"</span>,<span class="string">"param2"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>每条指令将在当前镜像基础上执行命令，并提交为新的镜像层，当命令较长时，可以使用<code>\</code>来换行。<code>cmd1 &amp;&amp; cmd2</code> 代表 一次性执行两条命令。</p>
+<h4 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h4><p>添加内容到镜像、</p>
+<p>语法：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ADD</span><span class="bash"> &lt;src&gt; &lt;dest&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>src</code>可以是dockerfile所在目录的相对路径(文件或目录)，也可以是一个<code>URL</code>，或者一个<code>tar</code>文件，会自动解压为目录。</p>
+<h4 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h4><p>复制内容到镜像，与<code>ADD</code>类似。</p>
+<p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY &lt;src&gt; &lt;dest&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h2><p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t image:v1 .</span><br></pre></td></tr></table></figure>
+
+<p>该命令会读取当前的Dockerfilke文件，并将该文件路径下的所有数据作为上下文(Context)发送到docker server端，服务的校验文件内指令的个时候，逐行执行命令。每一个指令会生成一层新的镜像。创建成功后，会返回最终镜像的ID。</p>
+<p>如果上下文过大，会导致发送大量数据给服务端，延缓创建过程，因此除非是生成镜像所必须的文件，不然最好不要放到上下文路径下。如果使用非上下文路径下的Dockerfile文件，可以通过<code>-f</code>指定。例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -f /home/dockerfile -t image:v2 .</span><br></pre></td></tr></table></figure>
+
+<p>注意不要少了最后一个<code>.</code>，它代表以当前路径为上下文，如果构建镜像的文件不在当前目录，也可以指定其他路径为当前构建镜像所需要的上下文。例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -f /home/dockerfile -t image:v3 /home/context/</span><br></pre></td></tr></table></figure>
+
+<h4 id="命令选项"><a href="#命令选项" class="headerlink" title="命令选项"></a>命令选项</h4><p>使用<code>docker build</code>命令构建镜像时，还支持一些选项来调整创建镜像过程的行为。</p>
+<ul>
+<li><code>--build-arg list</code>：添加创建时变量，给dockerfile中的<code>ARG</code>变量赋值或者覆盖</li>
+<li><code>--force-rm</code>：总是删除中间过程的容器</li>
+<li><code>--label list</code>：添加一些镜像的元数据标签</li>
+<li><code>--network string</code>：指定<code>RUN</code>命令时的网络模式</li>
+<li><code>--no-cache</code>：创建镜像时，不使用缓存</li>
+<li><code>--rm</code>：创建成功后自动删除中间过程容器，默认为真</li>
+</ul>
+<h1 id="优化dockerfile"><a href="#优化dockerfile" class="headerlink" title="优化dockerfile"></a>优化dockerfile</h1><h2 id="基础镜像"><a href="#基础镜像" class="headerlink" title="基础镜像"></a>基础镜像</h2><h2 id="dockerignore"><a href="#dockerignore" class="headerlink" title=".dockerignore"></a>.dockerignore</h2><h2 id="多阶段构建"><a href="#多阶段构建" class="headerlink" title="多阶段构建"></a>多阶段构建</h2><h2 id="及时清除缓存和缓存文件"><a href="#及时清除缓存和缓存文件" class="headerlink" title="及时清除缓存和缓存文件"></a>及时清除缓存和缓存文件</h2><h2 id="构建顺序"><a href="#构建顺序" class="headerlink" title="构建顺序"></a>构建顺序</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/docker%E5%AE%B9%E5%99%A8%E6%93%8D%E4%BD%9C.html" rel="next" title="docker容器操作">
+                <i class="fa fa-chevron-left"></i> docker容器操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/docker%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C.html" rel="prev" title="docker仓库操作">
+                docker仓库操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dockerfile"><span class="nav-number">1.</span> <span class="nav-text">Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本结构"><span class="nav-number">1.1.</span> <span class="nav-text">基本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指令"><span class="nav-number">1.2.</span> <span class="nav-text">指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FROM"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">FROM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ARG"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">ARG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LABEL"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">LABEL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EXPOSE"><span class="nav-number">1.2.0.4.</span> <span class="nav-text">EXPOSE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ENV"><span class="nav-number">1.2.0.5.</span> <span class="nav-text">ENV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CMD"><span class="nav-number">1.2.0.6.</span> <span class="nav-text">CMD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ENTRYPOINT"><span class="nav-number">1.2.0.7.</span> <span class="nav-text">ENTRYPOINT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VOLUME"><span class="nav-number">1.2.0.8.</span> <span class="nav-text">VOLUME</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#USER"><span class="nav-number">1.2.0.9.</span> <span class="nav-text">USER</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WORKDIR"><span class="nav-number">1.2.0.10.</span> <span class="nav-text">WORKDIR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ONBUILD"><span class="nav-number">1.2.0.11.</span> <span class="nav-text">ONBUILD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HEALTHCHECK"><span class="nav-number">1.2.0.12.</span> <span class="nav-text">HEALTHCHECK</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RUN"><span class="nav-number">1.2.0.13.</span> <span class="nav-text">RUN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ADD"><span class="nav-number">1.2.0.14.</span> <span class="nav-text">ADD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#COPY"><span class="nav-number">1.2.0.15.</span> <span class="nav-text">COPY</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建镜像"><span class="nav-number">1.3.</span> <span class="nav-text">构建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#命令选项"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">命令选项</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化dockerfile"><span class="nav-number">2.</span> <span class="nav-text">优化dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础镜像"><span class="nav-number">2.1.</span> <span class="nav-text">基础镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dockerignore"><span class="nav-number">2.2.</span> <span class="nav-text">.dockerignore</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多阶段构建"><span class="nav-number">2.3.</span> <span class="nav-text">多阶段构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#及时清除缓存和缓存文件"><span class="nav-number">2.4.</span> <span class="nav-text">及时清除缓存和缓存文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建顺序"><span class="nav-number">2.5.</span> <span class="nav-text">构建顺序</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

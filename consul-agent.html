@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="agent两种运行模式，server，client" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="agent运行模式、启停、生命周期。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Consul Agent">
+<meta property="og:url" content="https://jiangziya.top/consul-agent.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="agent运行模式、启停、生命周期。">
+<meta property="article:published_time" content="2019-07-30T03:14:25.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.851Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="agent两种运行模式，server，client">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/consul-agent.html"/>
+
+
+
+
+
+  <title>Consul Agent | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/consul-agent.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Consul Agent</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-30T11:14:25+08:00">
+                2019-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Consul/" itemprop="url" rel="index">
+                    <span itemprop="name">Consul</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  agent运行模式、启停、生命周期。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Agent"><a href="#Agent" class="headerlink" title="Agent"></a>Agent</h1><p><code>consul agent</code>是<code>consul</code>的核心流程。<code>agent</code>维护成员信息，注册服务，运行检查，响应查询等。<code>agent</code>必须在<code>consul</code>集群中的每个节点上运行。</p>
+<p>任何<code>agent</code>都可以以两种模式之一运行：客户端或服务端。服务端节点承担额外责任，成为共识仲裁一部分。这些节点参与Raft选举，并在发生故障时提供强大的一致性和可用性。服务端节点的负担越大意味着它们通常应该在专用实例上运行 ， 它们比客户端节点更耗费资源。客户端节点构成群集的大部分，并且它们非常轻量级，因为它们与服务端节点连接以进行大多数操作，并且维护自己的状态非常少。</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>可以使用命令行来启动<code>agent</code>。<code>agent</code>命令还有很多种可配置项，但是大多数都有合理的默认值。</p>
+<p>运行<code>consul agent</code>，会输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd02 ~]# consul agent -data-dir&#x3D;&#x2F;tmp&#x2F;consul</span><br><span class="line">&#x3D;&#x3D;&gt; Starting Consul agent...</span><br><span class="line">           Version: &#39;v1.5.3&#39;</span><br><span class="line">           Node ID: &#39;6e2b563a-c700-9b8d-3e5c-16d65e998543&#39;</span><br><span class="line">         Node name: &#39;jw-etcd02&#39;</span><br><span class="line">        Datacenter: &#39;dc1&#39; (Segment: &#39;&#39;)</span><br><span class="line">            Server: false (Bootstrap: false)</span><br><span class="line">       Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: -1, DNS: 8600)</span><br><span class="line">      Cluster Addr: 172.19.19.123 (LAN: 8301, WAN: 8302)</span><br><span class="line">           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false, Auto-Encrypt-TLS: false</span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;&gt; Log data will now stream in as it occurs:</span><br><span class="line"></span><br><span class="line">    2019&#x2F;07&#x2F;30 11:27:15 [INFO] serf: EventMemberJoin: jw-etcd02 172.19.19.123</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><code>Node name</code>：这是<code>agent</code>唯一的节点名称。默认情况下。这是机器的主机名，但也可以通过<code>-node</code>对其自定义。</li>
+<li><code>Datacenter</code>：这是配置<code>agent</code>程序以运行的数据中心。<code>consul</code>为多个数据中心提供一流的支持; 但是，要高效工作，必须将每个节点配置为报告其数据中心。该<code>-datacenter</code>标志可用于设置数据中心。对于单DC配置，默认为<code>dc1</code>。</li>
+<li><code>Server</code>：这表示<code>agent</code>是以服务端还是客户端模式运行。服务器节点具有参与共识仲裁，存储群集状态和处理查询的额外负担。另外，服务器可以处于<code>引导</code>模式。多个服务器无法处于引导模式，因为这会使群集处于不一致状态。</li>
+<li><code>Client Addr</code>：这是用于<code>agent</code>的客户端接口的地址。这包括HTTP和DNS接口的端口。默认情况下，它仅绑定到localhost。如果更改此地址或端口，则必须<code>-http-addr</code> 在运行命令时指定。</li>
+<li><code>Cluster Addr</code>：这是用于群集中的<code>consul agent</code>之间通信的地址和端口集。并非集群中的所有<code>consul agent</code>都必须使用相同的端口，但所有其他节点都必须可以访问此地址。</li>
+</ul>
+<h2 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h2><p>可以优雅的停止和强制停止。要正常暂停<code>agent</code>，请向进程发送中断信号（通常 <code>Ctrl-C</code>来自终端或正在运行<code>kill -9 consul_pid</code>）。正常退出时，代理首先通知它打算离开集群的集群。这样，其他集群成员就会通知集群该节点已离开。</p>
+<p>或者，您可以通过向其发送终止信号来强制终止<code>agent</code>。当力量被杀时，<code>agent</code>即结束。群集的其余部分最终（通常在几秒钟内）检测到节点已经死亡，并通知群集节点已发生故障。</p>
+<p>特别重要的是允许服务器节点优雅地离开，以便在服务器离开共识仲裁时对可用性的影响最小。</p>
+<h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2><p>首次启动时，它不知道群集中的任何其他节点。要发现它的对等体，它必须<em>加入</em>群集。这可以通过<code>join</code>命令完成， 也可以通过提供正确的配置来启动时自动加入。一旦节点加入，该信息将被闲置到整个集群，这意味着所有节点最终将彼此了解。如果代理是服务器，则现有服务器将开始复制到新节点。</p>
+<p>在网络故障的情况下，其他节点可能无法访问某些节点。在这种情况下，无法访问的节点被标记为失败。无法区分网络故障和代理程序崩溃，因此两种情况的处理方式相同。将节点标记为失败后，将在服务目录中更新此信息。</p>
+<p>当节点离开时，它指定了它的意图，并且集群将该节点标记为已离开。与失败的情况不同，节点提供的所有服务都会立即取消注册。如果<code>agent</code>是服务器，则将停止对其的复制。</p>
+<p>为了防止死节点的累积，<code>consul</code>将自动从目录中删除死节点。这个过程叫做收割。目前这是在72小时的可配置间隔内完成的（由于其在停电情况下的后果，因此不建议更改收割间隔）。收割类似于离开，导致所有相关服务被取消注册。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/consul-cluster-binding.html" rel="next" title="consul集群搭建">
+                <i class="fa fa-chevron-left"></i> consul集群搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/echo-hello.html" rel="prev" title="echo-hello">
+                echo-hello <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Agent"><span class="nav-number">1.</span> <span class="nav-text">Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行"><span class="nav-number">1.1.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#停止"><span class="nav-number">1.2.</span> <span class="nav-text">停止</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生命周期"><span class="nav-number">1.3.</span> <span class="nav-text">生命周期</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

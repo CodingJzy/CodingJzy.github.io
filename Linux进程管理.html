@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Linux进程管理" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Linux进程管理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux进程管理">
+<meta property="og:url" content="https://jiangziya.top/Linux%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="Linux进程管理">
+<meta property="article:published_time" content="2019-08-30T00:44:47.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.850Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="Linux进程管理">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/Linux进程管理.html"/>
+
+
+
+
+
+  <title>Linux进程管理 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/Linux%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Linux进程管理</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-30T08:44:47+08:00">
+                2019-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  Linux进程管理
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h1><h2 id="进程的观察"><a href="#进程的观察" class="headerlink" title="进程的观察"></a>进程的观察</h2><h3 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h3><p>显示某个时间点的进程运作情况</p>
+<ul>
+<li><code>ps aux</code>：观察系统所有的进程数据</li>
+<li><code>ps -lA</code>：观察系统所有的进程数据</li>
+<li><code>ps axjf</code>：连同部分进程数</li>
+</ul>
+<h3 id="top"><a href="#top" class="headerlink" title="top"></a>top</h3><p><strong>动态观察进程的变化：</strong></p>
+<ul>
+<li><code>top</code>：预设5秒来更新进程的画面</li>
+<li><code>top -d 1</code>：设置更新进程信息的时间为1秒</li>
+<li><code>top -d 1 -p 111</code>：只显示pid为111的进程动态信息</li>
+</ul>
+<p><strong>top执行过程中常用指令：</strong></p>
+<ul>
+<li><code>P</code>：以CPU资源使用率排序显示</li>
+<li><code>M</code>：以内存使用率排序</li>
+<li><code>N</code>：以PID来排序</li>
+<li><code>T</code>：以该进程使用的cpu累积时间排序</li>
+<li><code>q</code>：退出top动态刷新的界面</li>
+</ul>
+<p><strong>相关信息：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">top - 14:08:56 up 15 days,  2:56,  1 user,  load average: 0.05, 0.05, 0.05</span><br><span class="line">Tasks: 164 total,   1 running, 163 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  0.3 us,  0.5 sy,  0.0 ni, 99.2 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem :  3881276 total,  2925316 free,   157624 used,   798336 buff/cache</span><br><span class="line">KiB Swap:  2097148 total,  2097148 free,        0 used.  3209712 avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                       </span><br><span class="line"> 1534 root      20   0   10.0g  28460   8464 S   1.0  0.7 253:05.33 etcd</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一行(top)<ul>
+<li>目前时间，14:08:56</li>
+<li>开机到目前为止所经过的时间，15 days</li>
+<li>已经登录系统的用户人数：1 个 user</li>
+<li>工作负载，越小代表系统越闲置，若高于1就得注意系统进程是否太过繁复</li>
+</ul>
+</li>
+<li>第二行(Tasks)<ul>
+<li>显示的是目前进程的总量与个别进程在什么状态，需要注意的是最后一个，如果不是0，那就好好看看那个process变成了僵尸进程吧</li>
+</ul>
+</li>
+<li>第三行(%Cpus)<ul>
+<li>显示的是CPU的整体负载，需要注意的是wa。通常这个代表I/Owait，通常系统变慢是大量I/O产生的问题。如果是多核心的设备，可以按下1来切换不同cpu的负载率。</li>
+</ul>
+</li>
+<li>第四行与第五行<ul>
+<li>表示目前的物理内存和虚拟内存的使用情况，swap尽量要使用，被用的多的话，表示系统物理内存实在不足</li>
+</ul>
+</li>
+<li>第六行(每个进程使用的资源情况)<ul>
+<li>PID：每个进程的id号</li>
+<li>USER：该进程的所属使用者</li>
+<li>PR：进程的优先执行顺序，越小越早被执行</li>
+<li>NI：越小越早被执行</li>
+</ul>
+</li>
+</ul>
+<p><strong>注意：</strong></p>
+<p>top预设使用cpu使用率作为排序的重点，如果想要更换为内存使用率排序，则可以按字母键<code>M</code>。如果要恢复按<code>P</code>。如果想离开top，按<code>q</code>。</p>
+<h2 id="进程的管理"><a href="#进程的管理" class="headerlink" title="进程的管理"></a>进程的管理</h2><p>进程之间是可以相互控制的，可以关闭、重启。实际上是通过给它一个信号去告知该进程做什么。</p>
+<p><strong>主要信号：</strong></p>
+<table>
+<thead>
+<tr>
+<th>数字代号</th>
+<th>名称</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>sighup</td>
+<td>启动被终止的进程，可以让该进程重新读取自己的配置文件，类似重新启动</td>
+</tr>
+<tr>
+<td>9</td>
+<td>sigkill</td>
+<td>代表强制中端一个进程的进行，如果该进程进行到一半，就可能有半产品产生，比如说vim，会生成.swp隐藏文件</td>
+</tr>
+<tr>
+<td>15</td>
+<td>sigterm</td>
+<td>以正常的结束进程来终止该进程，但是如果这个进程本身已经发生问题，就无法通过正常的方法终止，也就是这个信号是无效的</td>
+</tr>
+</tbody></table>
+<h3 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h3><p><strong>格式：</strong><code>kill -signal PID</code></p>
+<p><strong>比如：</strong><code>kill -9 1111</code>：强制终止pid为1111的进程</p>
+<h3 id="killall"><a href="#killall" class="headerlink" title="killall"></a>killall</h3><p>由于kill后面必须跟PIDD，所以通常会结合ps指令使用。我们也可以不用PID，直接下达名称</p>
+<p><strong>格式：</strong><code>killall -signal name</code></p>
+<p><strong>比如：</strong></p>
+<ul>
+<li><code>killall -1 rsyslogd</code>：给rsylogd这个指令启动的PID一个代号为1的信号</li>
+<li><code>killadd -9 httpd</code>：强制终止以httpd启动的所有进程</li>
+</ul>
+<h2 id="系统资源的观察"><a href="#系统资源的观察" class="headerlink" title="系统资源的观察"></a>系统资源的观察</h2><p>除了系统的进程之外，我们还必须就系统的一些资源来进行检查。</p>
+<h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><p>观察内存使用情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd01 jw]<span class="comment"># free</span></span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:        3881276      161628     2961180      178876      758468     3245956</span><br><span class="line">Swap:       2097148           0     2097148</span><br><span class="line">[root@jw-etcd01 jw]<span class="comment"># free -m</span></span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:           3790         157        2891         174         740        3169</span><br><span class="line">Swap:          2047           0        2047</span><br></pre></td></tr></table></figure>
+
+<p>仔细看看，前面的好理解，第一行是物理内存使用情况，第二行是虚拟内存使用情况。我还有2891mb物理内存可以用。后面的<code>shared buff/cache</code>是在已被使用的量中，用来作为缓冲及快取的量，是缓存。在系统比较忙碌时，可以被释放出来而继续利用，因此后面有个`available（可用的）数值。</p>
+<p>我什么也没做，但是有740mb缓存。其实，系统把这些文件暂时存储下来，目的为了下次运作可以更快速取出之意。未来系统要用到该文件时，就可以直接在内存中搜寻取出，而不需要重新读取硬盘，速度会加快很多。</p>
+<h3 id="uname"><a href="#uname" class="headerlink" title="uname"></a>uname</h3><p>查阅系统与核心相关信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd01 jw]<span class="comment"># uname --help</span></span><br><span class="line">用法：uname [选项]...</span><br><span class="line">输出一组系统信息。如果不跟随选项，则视为只附加-s 选项。</span><br><span class="line"></span><br><span class="line">  -a, --all			以如下次序输出所有信息。其中若-p 和</span><br><span class="line">                -i 的探测结果不可知则被省略：</span><br><span class="line">  -s, --kernel-name		输出内核名称</span><br><span class="line">  -n, --nodename		输出网络节点上的主机名</span><br><span class="line">  -r, --kernel-release		输出内核发行号</span><br><span class="line">  -v, --kernel-version		输出内核版本</span><br><span class="line">  -m, --machine		输出主机的硬件架构名称,例如i686、x86_64、sw_64</span><br><span class="line">  -p, --processor		输出处理器类型或<span class="string">"unknown"</span></span><br><span class="line">  -i, --hardware-platform	输出硬件平台或<span class="string">"unknown"</span></span><br><span class="line">  -o, --operating-system	输出操作系统名称</span><br><span class="line">      --<span class="built_in">help</span>		显示此帮助信息并退出</span><br><span class="line">      --version		显示版本信息并退出</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Linux%E6%96%87%E4%BB%B6%E4%B8%8E%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8E%8B%E7%BC%A9-%E6%89%93%E5%8C%85-%E5%A4%87%E4%BB%BD.html" rel="next" title="Linux文件与文件系统的压缩、打包、备份">
+                <i class="fa fa-chevron-left"></i> Linux文件与文件系统的压缩、打包、备份
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Vim%E7%BC%96%E8%BE%91%E5%99%A8.html" rel="prev" title="Vim编辑器">
+                Vim编辑器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#进程管理"><span class="nav-number">1.</span> <span class="nav-text">进程管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的观察"><span class="nav-number">1.1.</span> <span class="nav-text">进程的观察</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ps"><span class="nav-number">1.1.1.</span> <span class="nav-text">ps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#top"><span class="nav-number">1.1.2.</span> <span class="nav-text">top</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的管理"><span class="nav-number">1.2.</span> <span class="nav-text">进程的管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kill"><span class="nav-number">1.2.1.</span> <span class="nav-text">kill</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#killall"><span class="nav-number">1.2.2.</span> <span class="nav-text">killall</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统资源的观察"><span class="nav-number">1.3.</span> <span class="nav-text">系统资源的观察</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#free"><span class="nav-number">1.3.1.</span> <span class="nav-text">free</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uname"><span class="nav-number">1.3.2.</span> <span class="nav-text">uname</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

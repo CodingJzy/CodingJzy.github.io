@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="docker官方仓库、第三方镜像市场、搭建本地私有仓库" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="docker官方仓库、第三方镜像市场、搭建本地私有仓">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker仓库操作">
+<meta property="og:url" content="https://jiangziya.top/docker%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="docker官方仓库、第三方镜像市场、搭建本地私有仓">
+<meta property="article:published_time" content="2019-08-27T10:01:31.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.852Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="docker官方仓库、第三方镜像市场、搭建本地私有仓库">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/docker仓库操作.html"/>
+
+
+
+
+
+  <title>docker仓库操作 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/docker%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">docker仓库操作</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-27T18:01:31+08:00">
+                2019-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  docker官方仓库、第三方镜像市场、搭建本地私有仓
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Repository"><a href="#Repository" class="headerlink" title="Repository"></a>Repository</h1><p>仓库(Repository)是集中存放镜像(Image)的地方，分为私有仓库和公共仓库。</p>
+<p>有时候我们喜欢把仓库和注册服务器(<code>Registry</code>)混淆，实际上并不是。注册服务器又称仓库服务器，是存放仓库的具体服务器。一个仓库服务器下可以有好多仓库。但是，你也别太较真，口语和概念本来就是有点不一样，大家心里清楚就行了。</p>
+<p>例如：<code>docker.io/library/nginx:latest</code>。</p>
+<ul>
+<li>注册服务器(Registry)：<code>docker.io</code></li>
+<li>仓库(Repository)：<code>library/nginx</code></li>
+<li>标签(Tag)：<code>latest</code></li>
+</ul>
+<h2 id="docker-hub公共镜像市场"><a href="#docker-hub公共镜像市场" class="headerlink" title="docker hub公共镜像市场"></a>docker hub公共镜像市场</h2><p><a href="https://hub.docker.com" target="_blank" rel="noopener">docker官方仓库</a>。</p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>通过<code>docker login</code>命令登录，需提前注册好用户。登录成功后，会在宿主机当前用户的家目录创建一个<code>~/.docker/config.json</code>文件。保存用户的认证信息，之后就可以和<code>git</code>操作一样，进行<code>pull</code>和<code>push</code>。</p>
+<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><p>无需登录就可以<code>docker search</code>命令来查找官方仓库的镜像。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@jw-ubuntu01:~<span class="comment"># docker search python</span></span><br><span class="line">NAME                             DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED</span><br><span class="line">python                           Python is an interpreted, interactive, objec…   <span class="number">4421</span>                [OK]                </span><br><span class="line">django                           Django is a free web application framework, …   <span class="number">863</span>                 [OK]                </span><br><span class="line">pypy                             PyPy is a fast, compliant alternative implem…   <span class="number">203</span>                 [OK]                </span><br><span class="line">kaggle/python                    Docker image for Python scripts <span class="keyword">run</span><span class="bash"> on Kaggle   128                                     [OK]</span></span><br><span class="line">arm32v7/python                   Python is an interpreted, interactive, objec…   <span class="number">38</span>                                      </span><br><span class="line">centos/python-<span class="number">35</span>-centos7         Platform for building and running Python <span class="number">3.5</span>…   <span class="number">36</span>                                      </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="第三方镜像市场"><a href="#第三方镜像市场" class="headerlink" title="第三方镜像市场"></a>第三方镜像市场</h2><h2 id="搭建本地私有仓库"><a href="#搭建本地私有仓库" class="headerlink" title="搭建本地私有仓库"></a>搭建本地私有仓库</h2><h3 id="使用自签发证书搭建私有仓库"><a href="#使用自签发证书搭建私有仓库" class="headerlink" title="使用自签发证书搭建私有仓库"></a>使用自签发证书搭建私有仓库</h3><h4 id="生成证书"><a href="#生成证书" class="headerlink" title="生成证书"></a>生成证书</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建证书文件夹</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># mkdir certs</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># ls</span></span><br><span class="line">certs images</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成证书</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt</span></span><br><span class="line">Generating a 4096 bit RSA private key</span><br><span class="line">..........................................++++</span><br><span class="line">......................................................................................................................................................................................................................................................................................................................................................................++++</span><br><span class="line">writing new private key to <span class="string">'certs/domain.key'</span></span><br><span class="line">-----</span><br><span class="line">You are about to be asked to enter information that will be incorporated</span><br><span class="line">into your certificate request.</span><br><span class="line">What you are about to enter is what is called a Distinguished Name or a DN.</span><br><span class="line">There are quite a few fields but you can leave some blank</span><br><span class="line">For some fields there will be a default value,</span><br><span class="line">If you enter <span class="string">'.'</span>, the field will be left blank.</span><br><span class="line">-----</span><br><span class="line">Country Name (2 letter code) [AU]:CH</span><br><span class="line">State or Province Name (full name) [Some-State]:BeiJing</span><br><span class="line">Locality Name (eg, city) []:HaiDian</span><br><span class="line">Organization Name (eg, company) [Internet Widgits Pty Ltd]:jiang_wei</span><br><span class="line">Organizational Unit Name (eg, section) []:linux</span><br><span class="line">Common Name (e.g. server FQDN or YOUR name) []:jiangwei.org          </span><br><span class="line">Email Address []:jw19961019@gmail.com</span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="编写compose-yaml"><a href="#编写compose-yaml" class="headerlink" title="编写compose.yaml"></a>编写compose.yaml</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">"2"</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  registry:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">registry:2.1</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">registry</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"5000:5000"</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="attr">      REGISTRY_HTTP_ADDR:</span> <span class="string">"0.0.0.0:5000"</span></span><br><span class="line"><span class="attr">      REGISTRY_HTTP_TLS_CERTIFICATE:</span> <span class="string">"/certs/domain.crt"</span></span><br><span class="line"><span class="attr">      REGISTRY_HTTP_TLS_KEY:</span> <span class="string">"/certs/domain.key"</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"./images:/var/lib/registry"</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"./certs:/certs"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="启动私有仓库"><a href="#启动私有仓库" class="headerlink" title="启动私有仓库"></a>启动私有仓库</h4><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># docker-compose up -d</span></span><br><span class="line">WARNING: The Docker Engine you<span class="string">'re using is running in swarm mode.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Compose does not use swarm mode to deploy services to multiple nodes in a swarm. All containers will be scheduled on the current node.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To deploy your application across the swarm, use `docker stack deploy`.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Pulling registry (registry:2.1)...</span></span><br><span class="line"><span class="string">2.1: Pulling from library/registry</span></span><br><span class="line"><span class="string">9943fffae777: Pull complete</span></span><br><span class="line"><span class="string">fb15e825cb68: Pull complete</span></span><br><span class="line"><span class="string">b9583a207297: Pull complete</span></span><br><span class="line"><span class="string">a3ed95caeb02: Pull complete</span></span><br><span class="line"><span class="string">87fee1c528e9: Pull complete</span></span><br><span class="line"><span class="string">829473b2393f: Pull complete</span></span><br><span class="line"><span class="string">2c1adb4b358c: Pull complete</span></span><br><span class="line"><span class="string">Digest: sha256:e641943a78a8f634c16ad69f5c9d779f470b147865c2121d89c52ea0da6fc1bd</span></span><br><span class="line"><span class="string">Status: Downloaded newer image for registry:2.1</span></span><br><span class="line"><span class="string">Creating registry ... done</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">root@jw-ubuntu01:/home/registry# docker-compose ps</span></span><br><span class="line"><span class="string">  Name                Command               State           Ports         </span></span><br><span class="line"><span class="string">--------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">registry   /bin/registry /etc/docker/ ...   Up      0.0.0.0:5000-&gt;5000/tcp</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="实验1：忽略证书访问"><a href="#实验1：忽略证书访问" class="headerlink" title="实验1：忽略证书访问"></a>实验1：忽略证书访问</h4><p>添加域名解析(另外的机器上)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:~/dsec/DSec/registry<span class="comment"># vim /etc/hosts</span></span><br><span class="line"></span><br><span class="line">127.0.0.1       localhost</span><br><span class="line">172.0.0.1       sw1</span><br><span class="line">192.168.32.88 jiangwei.org</span><br></pre></td></tr></table></figure>
+
+<p><code>ping</code>测试(另外的机器上)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:~/dsec/DSec/registry<span class="comment"># ping jiangwei.org</span></span><br><span class="line">PING jiangwei.org (192.168.32.88) 56(84) bytes of data.</span><br><span class="line">64 bytes from jiangwei.org (192.168.32.88): icmp_seq=1 ttl=60 time=0.894 ms</span><br><span class="line">64 bytes from jiangwei.org (192.168.32.88): icmp_seq=2 ttl=60 time=0.799 ms</span><br></pre></td></tr></table></figure>
+
+<h5 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 不带证书访问，--noproxy是因为公司走的是内网，设置下不走代理</span></span><br><span class="line">root@sw1:~/dsec/DSec/registry<span class="comment"># curl --noproxy jiangwei.org  https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">curl: (60) SSL certificate problem: self signed certificate</span><br><span class="line">More details here: https://curl.haxx.se/docs/sslcerts.html</span><br><span class="line"></span><br><span class="line">curl performs SSL certificate verification by default, using a <span class="string">"bundle"</span></span><br><span class="line"> of Certificate Authority (CA) public keys (CA certs). If the default</span><br><span class="line"> bundle file isn<span class="string">'t adequate, you can specify an alternate file</span></span><br><span class="line"><span class="string"> using the --cacert option.</span></span><br><span class="line"><span class="string">If this HTTPS server uses a certificate signed by a CA represented in</span></span><br><span class="line"><span class="string"> the bundle, the certificate verification probably failed due to a</span></span><br><span class="line"><span class="string"> problem with the certificate (it might be expired, or the name might</span></span><br><span class="line"><span class="string"> not match the domain name in the URL).</span></span><br><span class="line"><span class="string">If you'</span>d like to turn off curl<span class="string">'s verification of the certificate, use</span></span><br><span class="line"><span class="string"> the -k (or --insecure) option.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 忽略证书访问：-k or --insecure代表忽略证书</span></span><br><span class="line"><span class="string">root@sw1:~/dsec/DSec/registry# curl --noproxy jiangwei.org  -k https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line"><span class="string">&#123;"repositories":[]&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="push、pull"><a href="#push、pull" class="headerlink" title="push、pull"></a>push、pull</h5><p>在docker的配置文件中加一个参数(另外的机器上)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:/etc/systemd/system/docker.service.d<span class="comment"># cat /etc/docker/daemon.json </span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"insecure-registries"</span>: [<span class="string">"jiangwei.org:5000"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong>该参数就是你生成证书时填写的<code>CN</code>+<code>port</code>。我填的是<code>jiangwei.org</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:~/jiangwei<span class="comment"># docker push jiangwei.org:5000/test/busybox:latest</span></span><br><span class="line">The push refers to a repository [jiangwei.org:5000/<span class="built_in">test</span>/busybox]</span><br><span class="line">27a32be9858c: Pushed </span><br><span class="line">latest: digest: sha256:e9e3f57925c4725fc56076f9637adc80a45ac8f86161199926025a9455eb8e37 size: 2136</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这是我之前push过的，所以可以直接</span></span><br><span class="line">root@sw1:~/jiangwei<span class="comment"># docker pull jiangwei.org:5000/test/alpine:3.8</span></span><br><span class="line">3.8: Pulling from <span class="built_in">test</span>/alpine</span><br><span class="line">c87736221ed0: Pull complete </span><br><span class="line">Digest: sha256:030cbfe2fcf9627378255cf237b51a17dcbae11dee29a00f13670caf3fb09b80</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> jiangwei.org:5000/<span class="built_in">test</span>/alpine:3.8</span><br></pre></td></tr></table></figure>
+
+<h4 id="实验2：带证书访问"><a href="#实验2：带证书访问" class="headerlink" title="实验2：带证书访问"></a>实验2：带证书访问</h4><p>把证书从机器1拷贝到另一机器到<code>/etc/docker/certs.d/jiangwei.org:5000/</code>下面，没有就创建这个文件夹。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># scp certs/domain.crt sw1:/etc/docker/certs.d/jiangwei.org:5000/</span></span><br><span class="line">domain.crt</span><br></pre></td></tr></table></figure>
+
+<h5 id="curl-1"><a href="#curl-1" class="headerlink" title="curl"></a>curl</h5><p>之前的curl就可以跳过证书访问。现在来检验携带证书访问。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 一样的-x 是因为我走了公司内网，这里设置代理为空。</span></span><br><span class="line">root@sw1:/etc/docker/certs.d/jiangwei.org:5000<span class="comment"># curl --cacert ./domain.crt -x ""  https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">&#123;<span class="string">"repositories"</span>:[<span class="string">"pause"</span>,<span class="string">"test/alpine"</span>,<span class="string">"test/busybox"</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="push、pull-1"><a href="#push、pull-1" class="headerlink" title="push、pull"></a>push、pull</h5><p>为了检验有效性，把之前添加的<code>daemon.json</code>下的参数先删除。然后再重启docker。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 可以正常推</span></span><br><span class="line">root@sw1:/etc/docker/certs.d/jiangwei.org:5000<span class="comment"># docker push jiangwei.org:5000/pause</span></span><br><span class="line">The push refers to a repository [jiangwei.org:5000/pause]</span><br><span class="line">5f70bf18a086: Pushed </span><br><span class="line">41ff149e94f2: Pushed </span><br><span class="line">latest: digest: sha256:ccc01f0fd7377553737ab082f9ff2cc4d6f00491146001aa55d4fdf5a07960ba size: 3061</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可以正常拉</span></span><br><span class="line">root@sw1:/etc/docker/certs.d/jiangwei.org:5000<span class="comment"># docker pull jiangwei.org:5000/test/alpine:3.8</span></span><br><span class="line">3.8: Pulling from <span class="built_in">test</span>/alpine</span><br><span class="line">c87736221ed0: Already exists </span><br><span class="line">Digest: sha256:030cbfe2fcf9627378255cf237b51a17dcbae11dee29a00f13670caf3fb09b80</span><br><span class="line">Status: Image is up to date <span class="keyword">for</span> jiangwei.org:5000/<span class="built_in">test</span>/alpine:3.8</span><br></pre></td></tr></table></figure>
+
+<h4 id="实验3：全局带证书访问"><a href="#实验3：全局带证书访问" class="headerlink" title="实验3：全局带证书访问"></a>实验3：全局带证书访问</h4><p>现在不是把证书放在docker那个配置目录下，而是<code>/usr/local/share/ca-certificate/</code>目录下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用mv命令，这样原来的方式应该已经失效</span></span><br><span class="line">root@sw1:/usr/<span class="built_in">local</span>/share/ca-certificates<span class="comment"># mv /etc/docker/certs.d/jiangwei.org\:5000/domain.crt ./</span></span><br><span class="line">root@sw1:/usr/<span class="built_in">local</span>/share/ca-certificates<span class="comment"># ls</span></span><br><span class="line">cacert.crt  docker-hub.cloud.top.crt  domain.crt</span><br></pre></td></tr></table></figure>
+
+<p>更新证书：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:/usr/<span class="built_in">local</span>/share/ca-certificates<span class="comment"># update-ca-certificates </span></span><br><span class="line">Updating certificates <span class="keyword">in</span> /etc/ssl/certs...</span><br><span class="line">WARNING: ca.pem does not contain a certificate or CRL: skipping</span><br><span class="line">1 added, 0 removed; <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
+
+<h5 id="curl-2"><a href="#curl-2" class="headerlink" title="curl"></a>curl</h5><p>现在curl可以不用证书访问了，直接get。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:/<span class="comment"># curl  -x ""  https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">&#123;<span class="string">"repositories"</span>:[<span class="string">"pause"</span>,<span class="string">"test/alpine"</span>,<span class="string">"test/busybox"</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="push、pull-2"><a href="#push、pull-2" class="headerlink" title="push、pull"></a>push、pull</h5><p>重启docker，看看docker是否也可以。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">root@sw1:/<span class="comment"># systemctl restart docker</span></span><br><span class="line"><span class="comment"># 第一种忽略证书已经清空</span></span><br><span class="line">root@sw1:/<span class="comment"># cat /etc/docker/daemon.json </span></span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 第二种证书访问也已经被清空</span></span><br><span class="line">root@sw1:/<span class="comment"># ls /etc/docker/certs.d/jiangwei.org\:5000/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第三种push：检验通过</span></span><br><span class="line">root@sw1:/<span class="comment"># docker tag harbor.sh.deepin.com/sunway/rabbitmq:3.6.6 jiangwei.org:5000/test/rabbitmq:3.6.6</span></span><br><span class="line">root@sw1:/<span class="comment"># docker push jiangwei.org:5000/test/rabbitmq:3.6.6</span></span><br><span class="line">The push refers to a repository [jiangwei.org:5000/<span class="built_in">test</span>/rabbitmq]</span><br><span class="line">0da07d84e27d: Pushed </span><br><span class="line">7bf1a725df91: Pushing [==============&gt;                                    ]  27.68MB/97.76MB</span><br><span class="line">b1a42145e518: Pushed </span><br><span class="line">121d220e2d64: Pushing [================&gt;                                  ]  21.02MB/65.63MB</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong>实验都是在另外一台机器上做的。</p>
+<h3 id="登录认证方式搭建私有仓库"><a href="#登录认证方式搭建私有仓库" class="headerlink" title="登录认证方式搭建私有仓库"></a>登录认证方式搭建私有仓库</h3><p>就算有证书，浏览器或者docker都可以设置忽略证书，然后进行<code>push、pull</code>操作。或者通过<code>https</code>获取相关信息，这还是有点不安全。所以可以加入用户认证，就算他忽略了证书，也必须通过用户认证才能进行<code>push、pull</code>操作。或者通过<code>https</code>获取相关信息。</p>
+<h4 id="生成用户认证文件"><a href="#生成用户认证文件" class="headerlink" title="生成用户认证文件"></a>生成用户认证文件</h4><p>在运行仓库容器的服务器上操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建auth文件夹</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># mkdir auth</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 原生生成认证文件：创建了一个用户名为testuser、密码为testpassword的文件</span></span><br><span class="line">docker run  --entrypoint htpasswd  --rm registry:2.1 -Bbn testuser testpassword &gt; auth/htpasswd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看文件</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># cat auth/htpasswd </span></span><br><span class="line">testuser:<span class="variable">$2y</span><span class="variable">$05</span><span class="variable">$Rds3vlTUjEYKlLcgasiIBeARLtTwQrxfZ0Jgp6YsUCn5hExmdMFCu</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="修改compose-yaml文件"><a href="#修改compose-yaml文件" class="headerlink" title="修改compose.yaml文件"></a>修改compose.yaml文件</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># vim docker-compose.yaml </span></span><br><span class="line">version: <span class="string">"2"</span></span><br><span class="line">  </span><br><span class="line">services:</span><br><span class="line">  registry:</span><br><span class="line">    image: registry:2.1</span><br><span class="line">    container_name: registry</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"5000:5000"</span></span><br><span class="line">    environment:</span><br><span class="line">      REGISTRY_HTTP_ADDR: <span class="string">"0.0.0.0:5000"</span></span><br><span class="line">      REGISTRY_HTTP_TLS_CERTIFICATE: <span class="string">"/certs/domain.crt"</span></span><br><span class="line">      REGISTRY_HTTP_TLS_KEY: <span class="string">"/certs/domain.key"</span></span><br><span class="line">      REGISTRY_AUTH: <span class="string">"htpasswd"</span></span><br><span class="line">      REGISTRY_AUTH_HTPASSWD_REALM: <span class="string">"Registry Realm"</span></span><br><span class="line">      REGISTRY_AUTH_HTPASSWD_PATH: <span class="string">"/auth/htpasswd"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - <span class="string">"./images:/var/lib/registry"</span></span><br><span class="line">      - <span class="string">"./certs:/certs"</span></span><br><span class="line">      - <span class="string">"./auth:/auth"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><h5 id="curl-3"><a href="#curl-3" class="headerlink" title="curl"></a>curl</h5><p>为了互不影响，在第三台机器上测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消证书验证，但是不携带用户认证</span></span><br><span class="line">root@sw2:/<span class="comment"># curl  -k -x ""    https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">&#123;<span class="string">"errors"</span>:[&#123;<span class="string">"code"</span>:<span class="string">"UNAUTHORIZED"</span>,<span class="string">"message"</span>:<span class="string">"access to the requested resource is not authorized"</span>,<span class="string">"detail"</span>:[&#123;<span class="string">"Type"</span>:<span class="string">"registry"</span>,<span class="string">"Name"</span>:<span class="string">"catalog"</span>,<span class="string">"Action"</span>:<span class="string">"*"</span>&#125;]&#125;]&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消证书验证，但是携带错误口令认证</span></span><br><span class="line">root@sw2:/<span class="comment"># curl  -k -x "" -u testuser:password    https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">&#123;<span class="string">"errors"</span>:[&#123;<span class="string">"code"</span>:<span class="string">"UNAUTHORIZED"</span>,<span class="string">"message"</span>:<span class="string">"access to the requested resource is not authorized"</span>,<span class="string">"detail"</span>:[&#123;<span class="string">"Type"</span>:<span class="string">"registry"</span>,<span class="string">"Name"</span>:<span class="string">"catalog"</span>,<span class="string">"Action"</span>:<span class="string">"*"</span>&#125;]&#125;]&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消证书验证，携带正确令认证</span></span><br><span class="line">root@sw2:/<span class="comment"># curl  -k -x "" -u testuser:testpassword    https://jiangwei.org:5000/v2/_catalog</span></span><br><span class="line">&#123;<span class="string">"repositories"</span>:[<span class="string">"pause"</span>,<span class="string">"test/alpine"</span>,<span class="string">"test/busybox"</span>,<span class="string">"test/rabbitmq"</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="docker-login"><a href="#docker-login" class="headerlink" title="docker login"></a>docker login</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 没有登录就push</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># docker push  jiangwei.org:5000/test/alpine</span></span><br><span class="line">The push refers to repository [jiangwei.org:5000/<span class="built_in">test</span>/alpine]</span><br><span class="line">d9ff549177a9: Preparing </span><br><span class="line">no basic auth credentials</span><br><span class="line"></span><br><span class="line"><span class="comment"># 登录，携带错误口令</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># docker login jiangwei.org:5000</span></span><br><span class="line">Username: testuser</span><br><span class="line">Password: </span><br><span class="line">Error response from daemon: login attempt to https://jiangwei.org:5000/v2/ failed with status: 401 Unauthorized</span><br><span class="line"></span><br><span class="line"><span class="comment">#登录，携带正确口令</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># docker login jiangwei.org:5000</span></span><br><span class="line">Username: testuser</span><br><span class="line">Password: </span><br><span class="line">WARNING! Your password will be stored unencrypted <span class="keyword">in</span> /root/.docker/config.json.</span><br><span class="line">Configure a credential helper to remove this warning. See</span><br><span class="line">https://docs.docker.com/engine/reference/commandline/login/<span class="comment">#credentials-store</span></span><br><span class="line"></span><br><span class="line">Login Succeeded</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开始推送</span></span><br><span class="line">root@jw-ubuntu01:/home/registry<span class="comment"># docker push  jiangwei.org:5000/test/alpine</span></span><br><span class="line">The push refers to repository [jiangwei.org:5000/<span class="built_in">test</span>/alpine]</span><br><span class="line">d9ff549177a9: Layer already exists </span><br><span class="line">latest: digest: sha256:94acf7e9dabda295562ebf24085bf8d4785cda54ceacc8ec879ff481d0dba708 size: 2140</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong>：您不能将身份验证和将凭据作为明文发送的身份验证方案使用。您必须首先<a href="https://docs.docker.com/registry/deploying/#running-a-domain-registry" target="_blank" rel="noopener">配置TLS</a>才能进行身份验证。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 因为机器2没有证书，是登录不了的</span></span><br><span class="line">root@sw2:/<span class="comment"># docker login jiangwei.org:5000</span></span><br><span class="line">Username: 1</span><br><span class="line">Password: </span><br><span class="line">Error response from daemon: Get https://jiangwei.org:5000/v2/: x509: certificate signed by unknown authority</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/docker-dockerfile.html" rel="next" title="Dockerfile">
+                <i class="fa fa-chevron-left"></i> Dockerfile
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Linux%E6%9D%83%E9%99%90.html" rel="prev" title="Linux权限">
+                Linux权限 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Repository"><span class="nav-number">1.</span> <span class="nav-text">Repository</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-hub公共镜像市场"><span class="nav-number">1.1.</span> <span class="nav-text">docker hub公共镜像市场</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#登录"><span class="nav-number">1.1.1.</span> <span class="nav-text">登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本操作"><span class="nav-number">1.1.2.</span> <span class="nav-text">基本操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三方镜像市场"><span class="nav-number">1.2.</span> <span class="nav-text">第三方镜像市场</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建本地私有仓库"><span class="nav-number">1.3.</span> <span class="nav-text">搭建本地私有仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用自签发证书搭建私有仓库"><span class="nav-number">1.3.1.</span> <span class="nav-text">使用自签发证书搭建私有仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成证书"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">生成证书</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写compose-yaml"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">编写compose.yaml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动私有仓库"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">启动私有仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实验1：忽略证书访问"><span class="nav-number">1.3.1.4.</span> <span class="nav-text">实验1：忽略证书访问</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#curl"><span class="nav-number">1.3.1.4.1.</span> <span class="nav-text">curl</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#push、pull"><span class="nav-number">1.3.1.4.2.</span> <span class="nav-text">push、pull</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实验2：带证书访问"><span class="nav-number">1.3.1.5.</span> <span class="nav-text">实验2：带证书访问</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#curl-1"><span class="nav-number">1.3.1.5.1.</span> <span class="nav-text">curl</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#push、pull-1"><span class="nav-number">1.3.1.5.2.</span> <span class="nav-text">push、pull</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实验3：全局带证书访问"><span class="nav-number">1.3.1.6.</span> <span class="nav-text">实验3：全局带证书访问</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#curl-2"><span class="nav-number">1.3.1.6.1.</span> <span class="nav-text">curl</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#push、pull-2"><span class="nav-number">1.3.1.6.2.</span> <span class="nav-text">push、pull</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登录认证方式搭建私有仓库"><span class="nav-number">1.3.2.</span> <span class="nav-text">登录认证方式搭建私有仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成用户认证文件"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">生成用户认证文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改compose-yaml文件"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">修改compose.yaml文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#curl-3"><span class="nav-number">1.3.2.3.1.</span> <span class="nav-text">curl</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#docker-login"><span class="nav-number">1.3.2.3.2.</span> <span class="nav-text">docker login</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

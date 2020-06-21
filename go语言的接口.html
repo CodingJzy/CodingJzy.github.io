@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="go语言的接口简介 接口是双方规定的一种合作协议，接口实现者不需要关心接口会被怎样使用，调用者不需要关心接口的实现细节。接口是一种类型。也是一种抽象结构。不会暴露所含数据的格式、类型及结构。比如只要一台洗衣机有洗衣服的功能和甩干的功能，我们就称为洗衣机，不关心属性(数据)，只关心行为(方法)。 接口和其他动态语言的鸭子模型有密切关系。比如说python、javascript。任何类型，只要实现了该">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go语言的接口">
+<meta property="og:url" content="https://jiangziya.top/go%E8%AF%AD%E8%A8%80%E7%9A%84%E6%8E%A5%E5%8F%A3.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="go语言的接口简介 接口是双方规定的一种合作协议，接口实现者不需要关心接口会被怎样使用，调用者不需要关心接口的实现细节。接口是一种类型。也是一种抽象结构。不会暴露所含数据的格式、类型及结构。比如只要一台洗衣机有洗衣服的功能和甩干的功能，我们就称为洗衣机，不关心属性(数据)，只关心行为(方法)。 接口和其他动态语言的鸭子模型有密切关系。比如说python、javascript。任何类型，只要实现了该">
+<meta property="article:published_time" content="2019-07-21T14:38:05.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.866Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="江子牙，小喵喵，go">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/go语言的接口.html"/>
+
+
+
+
+
+  <title>go语言的接口 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/go%E8%AF%AD%E8%A8%80%E7%9A%84%E6%8E%A5%E5%8F%A3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">go语言的接口</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-21T22:38:05+08:00">
+                2019-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="go语言的接口"><a href="#go语言的接口" class="headerlink" title="go语言的接口"></a>go语言的接口</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ul>
+<li>接口是双方规定的一种合作协议，接口实现者不需要关心接口会被怎样使用，调用者不需要关心接口的实现细节。接口是一种类型。也是一种抽象结构。不会暴露所含数据的格式、类型及结构。比如只要一台洗衣机有洗衣服的功能和甩干的功能，我们就称为洗衣机，不关心属性(数据)，只关心行为(方法)。</li>
+<li>接口和其他动态语言的鸭子模型有密切关系。比如说<code>python</code>、<code>javascript</code>。任何类型，只要实现了该接口中的方法集，那么就属于这个类型。</li>
+<li>每个接口由数个方法组成。</li>
+</ul>
+<h2 id="接口的定义"><a href="#接口的定义" class="headerlink" title="接口的定义"></a>接口的定义</h2><p>格式：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> 接口类型名 <span class="keyword">interface</span> &#123;</span><br><span class="line">    方法名<span class="number">1</span>( 参数列表<span class="number">1</span> ) 返回值列表<span class="number">1</span></span><br><span class="line">    方法名<span class="number">2</span>( 参数列表<span class="number">2</span> ) 返回值列表<span class="number">2</span></span><br><span class="line">    …</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>接口类型名：使用<code>type</code>将接口定义为自定义的类型名</li>
+<li>方法名：当方法名首字母是大写时，且这个接口类型名首字母也是大写时，这个方法可以被接口所在的包之外的代码访问。</li>
+<li>参数列表、返回值列表：参数列表和返回值列表的参数变量名可以被忽略</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以吃</span></span><br><span class="line"><span class="keyword">type</span> Eat <span class="keyword">interface</span> &#123;</span><br><span class="line">    eat()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到这个接口时，只知道他有一个<code>eat()</code>方法。并不知道谁实现了这些接口，也不知道是怎么实现的这些这个方法的。</p>
+<h2 id="实现接口的条件"><a href="#实现接口的条件" class="headerlink" title="实现接口的条件"></a>实现接口的条件</h2><ul>
+<li>接口的方法与实现接口的类型方法格式一致</li>
+<li>接口的方法与实现接口的类型方法数目保持一致。即接口中的所有方法均被实现。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个鸭子类型接口</span></span><br><span class="line"><span class="keyword">type</span> Duck <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// 鸭子叫</span></span><br><span class="line">    GaGa()</span><br><span class="line">    <span class="comment">// 鸭子走</span></span><br><span class="line">    YouYong()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个小鸡类型的结构体</span></span><br><span class="line"><span class="keyword">type</span> Chicken <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为小鸡结构体实现GaGa</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Chicken)</span> <span class="title">GaGa</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"我是小鸡，但我也会嘎嘎叫"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为小鸡结构体实现YouYong</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Chicken)</span> <span class="title">YouYong</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"我是小鸡，但我也会游泳"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 实例化一个小鸡</span></span><br><span class="line">    c := <span class="built_in">new</span>(Chicken)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化一个小鸡小鸭合体类型</span></span><br><span class="line">    <span class="keyword">var</span> duckChicken Duck = c</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 小鸡小鸭开始嘎嘎</span></span><br><span class="line">    duckChicken.GaGa()</span><br><span class="line">    <span class="comment">// 小鸡小鸭开始游泳</span></span><br><span class="line">    duckChicken.YouYong()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来，<code>duckChicken</code>可以直接调用<code>GaGa</code>和<code>YouYong</code>。他并不知道这两个方法内部怎么实现的。</p>
+<h2 id="值类型接收者和指针型接收者实现接口"><a href="#值类型接收者和指针型接收者实现接口" class="headerlink" title="值类型接收者和指针型接收者实现接口"></a>值类型接收者和指针型接收者实现接口</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个汪汪叫的接口</span></span><br><span class="line"><span class="keyword">type</span> WangWager <span class="keyword">interface</span> &#123;</span><br><span class="line">    Wang()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个狗结构体</span></span><br><span class="line"><span class="keyword">type</span> Dog <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d Dog)</span> <span class="title">Wang</span><span class="params">()</span></span>  &#123;</span><br><span class="line">    fmt.Println(<span class="string">"汪汪叫"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    d1 := Dog&#123;<span class="string">"小狗1"</span>&#125;</span><br><span class="line">    d2 := &amp;Dog&#123;</span><br><span class="line">        <span class="string">"小狗2"</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> w1 WangWager = d1</span><br><span class="line">    w1.Wang()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> w2 WangWager = d2</span><br><span class="line">    w2.Wang()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，使用值类型实现接口后，不管dog结构体实例化是指针型还是值类型。都可以赋值给该接口变量。因为go语言内部有对指针类型变量求值的语法糖。</p>
+<p>但是指针型实现接口后，只能指针型变量赋值给接口变量。</p>
+<h2 id="类型与接口的关系"><a href="#类型与接口的关系" class="headerlink" title="类型与接口的关系"></a>类型与接口的关系</h2><p>类型与接口有一对多和多对多的关系。</p>
+<h3 id="一-类型-对多-接口-："><a href="#一-类型-对多-接口-：" class="headerlink" title="一(类型)对多(接口)："></a>一(类型)对多(接口)：</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Writer接口</span></span><br><span class="line"><span class="keyword">type</span> Writer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Writer(p []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Closer接口</span></span><br><span class="line"><span class="keyword">type</span> Closer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Closer() error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个socket结构体类型</span></span><br><span class="line"><span class="keyword">type</span> Socket <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为socket实现一个Writer()方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Socket)</span> <span class="title">Writer</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"开始写入"</span>)</span><br><span class="line">    <span class="keyword">return</span> n, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为socket实现一个Closer()方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Socket)</span> <span class="title">Closer</span><span class="params">()</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"开始关闭"</span>)</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个函数，负责写</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">useWriter</span><span class="params">(w Writer)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 执行w接口的写方法</span></span><br><span class="line">    _, _ := w.Writer(<span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 定义一个函数，负责关闭</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">useCloser</span><span class="params">(c Closer)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 执行c接口的关闭方法</span></span><br><span class="line">    _ := c.Closer()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"理解类型与接口的关系"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型和接口之间有一对多和多对一的关系。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一个类型可以实现多个接口</span></span><br><span class="line">    <span class="comment">// 实例化socker结构体</span></span><br><span class="line">    s := <span class="built_in">new</span>(Socket)</span><br><span class="line">    useWriter(s)</span><br><span class="line">    useCloser(s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出两个函数完全独立，完全不知道对方的存在，也不知道使用自己的接口是socket使用的</p>
+<h3 id="多-类型-对一-接口"><a href="#多-类型-对一-接口" class="headerlink" title="多(类型)对一(接口)"></a>多(类型)对一(接口)</h3><p>接口的方法不一定要一个结构体类型完全实现，接口的方法可以通过结构体嵌入实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个服务接口，实现了服务开启和日志输出的方法</span></span><br><span class="line"><span class="keyword">type</span> Service <span class="keyword">interface</span> &#123;</span><br><span class="line">    Start()     <span class="comment">// 启动服务</span></span><br><span class="line">    Log(<span class="keyword">string</span>) <span class="comment">// 日志输出</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个游戏服务结构体</span></span><br><span class="line"><span class="keyword">type</span> GameService <span class="keyword">struct</span> &#123;</span><br><span class="line">    Logger <span class="comment">// 内嵌logger结构体</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为游戏结构体实现游戏服务的启动method</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *GameService)</span> <span class="title">Start</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"游戏服务启动成功"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个日志器结构体</span></span><br><span class="line"><span class="keyword">type</span> Logger <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为日志服务器结构体实现日志输出的method</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *Logger)</span> <span class="title">Log</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 多个类型可以实现相同的接口</span></span><br><span class="line">    <span class="keyword">var</span> ser Service = <span class="built_in">new</span>(GameService)</span><br><span class="line">    ser.Start()</span><br><span class="line">    ser.Log(<span class="string">"日志输出"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，服务接口下一个服务启动功能和日志输出功能，但是游戏服务类型并没有实现日志输出功能，而是间接通过内嵌日志类型来实现，日志类型实现了日志输出功能，所有游戏服务类型实现的接口可以直接使用日志输出功能。</p>
+<h2 id="接口的嵌套组合"><a href="#接口的嵌套组合" class="headerlink" title="接口的嵌套组合"></a>接口的嵌套组合</h2><p>不仅类型与类型之间可以嵌套，接口与接口之间也可以嵌套。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Say接口</span></span><br><span class="line"><span class="keyword">type</span> Say <span class="keyword">interface</span> &#123;</span><br><span class="line">    Say(s <span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Run接口</span></span><br><span class="line"><span class="keyword">type</span> Run <span class="keyword">interface</span> &#123;</span><br><span class="line">    Run(n <span class="keyword">int</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Skill接口</span></span><br><span class="line"><span class="keyword">type</span> Skill <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// 嵌套了两个接口</span></span><br><span class="line">    Say</span><br><span class="line">    Run</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个Person结构体</span></span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为Person结构体实现Say方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Person)</span> <span class="title">Say</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"说话："</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为Person结构体实现Run方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Person)</span> <span class="title">Run</span><span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"步数："</span>, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 实现人的结构体的技能类型</span></span><br><span class="line">    <span class="keyword">var</span> s Skill = <span class="built_in">new</span>(Person)</span><br><span class="line">    s.Say(<span class="string">"Life Is Short Let's Go"</span>)</span><br><span class="line">    s.Run(<span class="number">9999</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现哑巴(人)结构体的技能类型，无法说话，只能跑步</span></span><br><span class="line">    <span class="keyword">var</span> yaBa Run = <span class="built_in">new</span>(Person)</span><br><span class="line">    yaBa.Run(<span class="number">100000</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="空接口"><a href="#空接口" class="headerlink" title="空接口"></a>空接口</h2><p>空接口是接口类型的特殊形式，空接口没有任何方法。因此任何类型都无须实现，从实现的角度来看。任何值都满足这个接口的需求。因此空接口类型可以保存任何值，也可以从中取值。</p>
+<h3 id="保存值"><a href="#保存值" class="headerlink" title="保存值"></a>保存值</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 将各种数据类型的值保存到空接口</span></span><br><span class="line">    <span class="keyword">var</span> any <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    any = <span class="number">1</span></span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = <span class="number">0.99</span></span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = <span class="string">"Hello Gp"</span></span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = <span class="literal">true</span></span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = []<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = [...]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">    fmt.Println(any)</span><br><span class="line">    any = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">    fmt.Println(any)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="空接口的应用"><a href="#空接口的应用" class="headerlink" title="空接口的应用"></a>空接口的应用</h3><h4 id="空接口作为函数的参数"><a href="#空接口作为函数的参数" class="headerlink" title="空接口作为函数的参数"></a>空接口作为函数的参数</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">show</span><span class="params">(v <span class="keyword">interface</span>&#123;&#125;)</span></span>  &#123;</span><br><span class="line">    fmt.Println(v)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    show(<span class="string">"江子牙"</span>)</span><br><span class="line">    show(<span class="number">520</span>)</span><br><span class="line">    show(<span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="空接口作为map的value"><a href="#空接口作为map的value" class="headerlink" title="空接口作为map的value"></a>空接口作为map的value</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    a := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">        <span class="string">"name"</span>:    <span class="string">"江子牙"</span>,</span><br><span class="line">        <span class="string">"age"</span>:     <span class="number">21</span>,</span><br><span class="line">        <span class="string">"isLogin"</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="接口和类型之间的转换"><a href="#接口和类型之间的转换" class="headerlink" title="接口和类型之间的转换"></a>接口和类型之间的转换</h2><p>go 语言中使用接口断言(type assertions) 将接口转换成另一外一个接口，也可以将接口转另外的类型。使用非常频繁。</p>
+<h3 id="类型断言"><a href="#类型断言" class="headerlink" title="类型断言"></a>类型断言</h3><p>格式：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t := i.(T)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>i：代表接口变量</li>
+<li>T：代表转换的目标类型</li>
+<li>t：转换后的变量</li>
+</ul>
+<p>如果i没有完全实现T接口的方法，这个语句会触发宕机，触发宕机不是很友好，因为有另一种保守写法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t, ok := i.(T)</span><br></pre></td></tr></table></figure>
+
+<p>这种写法的好处就是如果发送接口未实现时，将会返回一个布尔值<code>false</code>，即<code>ok</code>的值，而且t的类型为0。正常实现时，<code>ok</code>为<code>true</code>。</p>
+<h3 id="接口转化为其他接口"><a href="#接口转化为其他接口" class="headerlink" title="接口转化为其他接口"></a>接口转化为其他接口</h3><p>例子：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义飞行动物接口</span></span><br><span class="line"><span class="keyword">type</span> Flyer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Fly(s <span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义爬行动物接口</span></span><br><span class="line"><span class="keyword">type</span> Walker <span class="keyword">interface</span> &#123;</span><br><span class="line">    Walk(s <span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义小鸟类结构体</span></span><br><span class="line"><span class="keyword">type</span> Bird <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义小猪类结构体</span></span><br><span class="line"><span class="keyword">type</span> Pig <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为小鸟类实现飞的技能和走路的技能</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bird)</span> <span class="title">Fly</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"小鸟飞行："</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bird)</span> <span class="title">Walk</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"小鸟走路："</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为小猪实现走路的技能</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pig)</span> <span class="title">Walk</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"死猪跑不动吗："</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 先创建一个字典来存放接口的信息。</span></span><br><span class="line">    animals := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">        <span class="string">"bird"</span>: <span class="built_in">new</span>(Bird),</span><br><span class="line">        <span class="string">"pig"</span>:  <span class="built_in">new</span>(Pig),</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(animals)</span><br><span class="line">    <span class="comment">// 循环map</span></span><br><span class="line">    <span class="keyword">for</span> name, obj := <span class="keyword">range</span> animals &#123;</span><br><span class="line">        <span class="comment">// 类型断言：判断obj是爬行动物还是飞行动物</span></span><br><span class="line">        f, isFly := obj.(Flyer)</span><br><span class="line">        w, isWalk := obj.(Walker)</span><br><span class="line">        fmt.Printf(<span class="string">"name：%s\tisFlyer：%v\tisWalker：%v\n"</span>, name, isFly, isWalk)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 类型判断</span></span><br><span class="line">        <span class="keyword">if</span> isFly &#123;</span><br><span class="line">            f.Fly(<span class="string">"100米"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> isWalk &#123;</span><br><span class="line">            w.Walk(<span class="string">"1000步"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="接口转化为类型"><a href="#接口转化为类型" class="headerlink" title="接口转化为类型"></a>接口转化为类型</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义爬行动物接口</span></span><br><span class="line"><span class="keyword">type</span> Walker <span class="keyword">interface</span> &#123;</span><br><span class="line">    Walk(s <span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义小猪类结构体</span></span><br><span class="line"><span class="keyword">type</span> Pig <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为小猪实现走路的技能</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pig)</span> <span class="title">Walk</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"死猪跑不动吗："</span>, s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 将接口转为其他类型：可以实现将接口转为普通的指针类型</span></span><br><span class="line">    <span class="comment">// 实例化出一个小猪结构体</span></span><br><span class="line">    p1 := <span class="built_in">new</span>(Pig)</span><br><span class="line">    <span class="comment">// 声明一个类型为小猪爬行类w接口</span></span><br><span class="line">    <span class="keyword">var</span> w Walker = p1</span><br><span class="line">    fmt.Println(w)</span><br><span class="line">    fmt.Printf(<span class="string">"%T\n"</span>, w)</span><br><span class="line">    fmt.Printf(<span class="string">"%T\n"</span>, p1)</span><br><span class="line">    <span class="comment">// 将w接口转为*Pig类型</span></span><br><span class="line">    p2 := w.(*Pig)</span><br><span class="line">    fmt.Printf(<span class="string">"p1 = %p\np2 = %p"</span>, p1, p2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&amp;&#123;&#125;</span><br><span class="line">*main.Pig</span><br><span class="line">*main.Pig</span><br><span class="line">p1 = <span class="number">0x5861b0</span></span><br><span class="line">p2 = <span class="number">0x5861b0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="判断接口中变量的类型"><a href="#判断接口中变量的类型" class="headerlink" title="判断接口中变量的类型"></a>判断接口中变量的类型</h2><h3 id="判断基本类型"><a href="#判断基本类型" class="headerlink" title="判断基本类型"></a>判断基本类型</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printType</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">switch</span> i.(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">int</span>:</span><br><span class="line">        fmt.Println(<span class="string">"int类型"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">string</span>:</span><br><span class="line">        fmt.Println(<span class="string">"string类型"</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">bool</span>:</span><br><span class="line">        fmt.Println(<span class="string">"bool类型"</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        fmt.Println(<span class="string">"不知名类型"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 使用类型分支判断基本类型</span></span><br><span class="line">    printType(<span class="string">"str"</span>)</span><br><span class="line">    printType(<span class="number">1</span>)</span><br><span class="line">    printType(<span class="literal">true</span>)</span><br><span class="line">    printType([]<span class="keyword">string</span>&#123;&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span>类型</span><br><span class="line"><span class="keyword">int</span>类型</span><br><span class="line"><span class="keyword">bool</span>类型</span><br><span class="line">不知名类型</span><br></pre></td></tr></table></figure>
+
+<h3 id="判断接口类型"><a href="#判断接口类型" class="headerlink" title="判断接口类型"></a>判断接口类型</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 刷脸的接口</span></span><br><span class="line"><span class="keyword">type</span> useFace <span class="keyword">interface</span> &#123;</span><br><span class="line">    Face(<span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 刷人民币值为100的接口</span></span><br><span class="line"><span class="keyword">type</span> useOneHundred <span class="keyword">interface</span> &#123;</span><br><span class="line">    OneHundred(<span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 支付宝方式结构体</span></span><br><span class="line"><span class="keyword">type</span> Alipy <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 现金方式方式结构体</span></span><br><span class="line"><span class="keyword">type</span> Cash <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为支付宝提供人脸支付的方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Alipy)</span> <span class="title">Face</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为现金支付提供支付100元的方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Cash)</span> <span class="title">OneHundred</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printPay</span><span class="params">(payMethod <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> pay = payMethod</span><br><span class="line">    <span class="comment">// 判断接口类型</span></span><br><span class="line">    <span class="keyword">switch</span> payMethod.(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> useFace:</span><br><span class="line">        face := pay.(*Alipy)</span><br><span class="line">        face.Face(<span class="string">"刷脸"</span>)</span><br><span class="line">    <span class="keyword">case</span> useOneHundred:</span><br><span class="line">        cash := pay.(*Cash)</span><br><span class="line">        cash.OneHundred(<span class="string">"支付100毛爷爷"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用类型分支判断接口类型</span></span><br><span class="line">    printPay(<span class="built_in">new</span>(Alipy))</span><br><span class="line">    printPay(<span class="built_in">new</span>(Cash))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">刷脸</span><br><span class="line">支付<span class="number">100</span>毛爷爷</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/go%E8%AF%AD%E8%A8%80%E7%9A%84%E5%88%87%E7%89%87.html" rel="next" title="go语言的切片">
+                <i class="fa fa-chevron-left"></i> go语言的切片
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/etcd%E9%9B%86%E7%BE%A4%E6%BC%94%E7%A4%BA.html" rel="prev" title="etcd集群演示">
+                etcd集群演示 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#go语言的接口"><span class="nav-number">1.</span> <span class="nav-text">go语言的接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口的定义"><span class="nav-number">1.2.</span> <span class="nav-text">接口的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现接口的条件"><span class="nav-number">1.3.</span> <span class="nav-text">实现接口的条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#值类型接收者和指针型接收者实现接口"><span class="nav-number">1.4.</span> <span class="nav-text">值类型接收者和指针型接收者实现接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型与接口的关系"><span class="nav-number">1.5.</span> <span class="nav-text">类型与接口的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一-类型-对多-接口-："><span class="nav-number">1.5.1.</span> <span class="nav-text">一(类型)对多(接口)：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多-类型-对一-接口"><span class="nav-number">1.5.2.</span> <span class="nav-text">多(类型)对一(接口)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口的嵌套组合"><span class="nav-number">1.6.</span> <span class="nav-text">接口的嵌套组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#空接口"><span class="nav-number">1.7.</span> <span class="nav-text">空接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#保存值"><span class="nav-number">1.7.1.</span> <span class="nav-text">保存值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空接口的应用"><span class="nav-number">1.7.2.</span> <span class="nav-text">空接口的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#空接口作为函数的参数"><span class="nav-number">1.7.2.1.</span> <span class="nav-text">空接口作为函数的参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#空接口作为map的value"><span class="nav-number">1.7.2.2.</span> <span class="nav-text">空接口作为map的value</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口和类型之间的转换"><span class="nav-number">1.8.</span> <span class="nav-text">接口和类型之间的转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类型断言"><span class="nav-number">1.8.1.</span> <span class="nav-text">类型断言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口转化为其他接口"><span class="nav-number">1.8.2.</span> <span class="nav-text">接口转化为其他接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口转化为类型"><span class="nav-number">1.8.3.</span> <span class="nav-text">接口转化为类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断接口中变量的类型"><span class="nav-number">1.9.</span> <span class="nav-text">判断接口中变量的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断基本类型"><span class="nav-number">1.9.1.</span> <span class="nav-text">判断基本类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#判断接口类型"><span class="nav-number">1.9.2.</span> <span class="nav-text">判断接口类型</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

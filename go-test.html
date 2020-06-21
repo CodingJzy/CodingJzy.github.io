@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="go语言的单元测试" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="go语言的单元测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go语言的单元测试">
+<meta property="og:url" content="https://jiangziya.top/go-test.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="go语言的单元测试">
+<meta property="article:published_time" content="2019-07-31T13:55:49.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.861Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="go语言的单元测试">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/go-test.html"/>
+
+
+
+
+
+  <title>go语言的单元测试 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/go-test.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">go语言的单元测试</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-31T21:55:49+08:00">
+                2019-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  go语言的单元测试
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="go语言的测试"><a href="#go语言的测试" class="headerlink" title="go语言的测试"></a>go语言的测试</h1><p>不写测试的开发不是好程序员。</p>
+<h2 id="go-test-工具"><a href="#go-test-工具" class="headerlink" title="go test 工具"></a>go test 工具</h2><p>go语言测试依赖<code>go test</code>命令。编写测试代码和编写普通的go代码过程是类似的。</p>
+<p>在包目录中，所有以<code>_test.go</code>为后缀名的源码文件都是<code>go test</code>测试的一部分，不会被<code>go build</code>编译到最终的可执行文件中。</p>
+<p>在<code>*_test.go</code>文件中有三种类型的函数，单元测试函数、基准测试函数、示例函数。</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">格式</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">测试函数</td>
+<td align="center">前缀为Test</td>
+<td align="center">测试程序的一些逻辑行为是否正确</td>
+</tr>
+<tr>
+<td align="center">基准函数</td>
+<td align="center">前缀为Benchmark</td>
+<td align="center">测试函数的性能</td>
+</tr>
+<tr>
+<td align="center">示例函数</td>
+<td align="center">前缀为Example</td>
+<td align="center">问文档提供示例文档</td>
+</tr>
+</tbody></table>
+<h2 id="测试函数"><a href="#测试函数" class="headerlink" title="测试函数"></a>测试函数</h2><h3 id="测试函数的格式"><a href="#测试函数的格式" class="headerlink" title="测试函数的格式"></a>测试函数的格式</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestName</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试函数的示例"><a href="#测试函数的示例" class="headerlink" title="测试函数的示例"></a>测试函数的示例</h3><h4 id="需要测试的代码"><a href="#需要测试的代码" class="headerlink" title="需要测试的代码"></a>需要测试的代码</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"strings"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个字符串切割的函数，用sep切割原字符串，并返回切割后的字符串切片</span></span><br><span class="line"><span class="comment">// a:b:c --&gt; [a b c]</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Split</span><span class="params">(s, sep <span class="keyword">string</span>)</span> <span class="params">(res []<span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 当sep在s中，拿到sep的索引。只要索引大于0就说明有多个sep。可以进行多次切割。</span></span><br><span class="line">    index := strings.Index(s, sep)</span><br><span class="line">    <span class="keyword">for</span> index &gt;= <span class="number">0</span> &#123;</span><br><span class="line">        res = <span class="built_in">append</span>(res, s[:index])</span><br><span class="line">        s = s[index+<span class="number">1</span>:]</span><br><span class="line">        index = strings.Index(s, sep)</span><br><span class="line">    &#125;</span><br><span class="line">    res = <span class="built_in">append</span>(res, s)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="编写测试函数"><a href="#编写测试函数" class="headerlink" title="编写测试函数"></a>编写测试函数</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSplit</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := <span class="string">"a:b:c"</span></span><br><span class="line">    sep := <span class="string">":"</span></span><br><span class="line">    sp := Split(s, sep)</span><br><span class="line">    sp0 := []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> ok := reflect.DeepEqual(sp, sp0); !ok &#123;</span><br><span class="line">        t.Fatalf(<span class="string">"测试失败：期望得到：%v， 实际得到：%v\n"</span>, sp0, sp)</span><br><span class="line">    &#125;</span><br><span class="line">    t.Logf(<span class="string">"测试通过，得到：%v"</span>, sp0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果切割的字符串不在原有字符串</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSplit2</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := <span class="string">"123321"</span></span><br><span class="line">    sep := <span class="string">"0"</span></span><br><span class="line">    sp := Split(s, sep)</span><br><span class="line">    sp0 := []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> ok := reflect.DeepEqual(sp, sp0); !ok &#123;</span><br><span class="line">        t.Fatal(<span class="string">"测试失败"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    t.Logf(<span class="string">"测试通过，得到：%v"</span>, sp0)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试所有"><a href="#测试所有" class="headerlink" title="测试所有"></a>测试所有</h4><p>写完测试的函数后，可以在当前包下用<code>go tes</code>t开始测试。默认会测试所有的测试函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~/code/<span class="keyword">go</span>/src/golang/study/split$ <span class="keyword">go</span> test</span><br><span class="line">PASS</span><br><span class="line">ok      golang/study/split      <span class="number">0.001s</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="测试的详细信息"><a href="#测试的详细信息" class="headerlink" title="测试的详细信息"></a>测试的详细信息</h4><p>但是，这样看不出详细信息，可以加参数<code>-v</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~/code/<span class="keyword">go</span>/src/golang/study/split$ <span class="keyword">go</span> test -v</span><br><span class="line">=== RUN   TestSplit</span><br><span class="line">--- PASS: TestSplit (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">16</span>: 测试通过，得到：[a b c]</span><br><span class="line">=== RUN   TestSplit2</span><br><span class="line">--- PASS: TestSplit2 (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">28</span>: 测试通过，得到：[<span class="number">123321</span>]</span><br><span class="line">PASS</span><br><span class="line">ok      golang/study/split      <span class="number">0.001s</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="测试单个"><a href="#测试单个" class="headerlink" title="测试单个"></a>测试单个</h4><p>当我们只想测试一个功能时，可以加<code>-run</code> or <code>--run</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~/code/<span class="keyword">go</span>/src/golang/study/split$ <span class="keyword">go</span> test -v -run Split2</span><br><span class="line">=== RUN   TestSplit2</span><br><span class="line">--- PASS: TestSplit2 (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">28</span>: 测试通过，得到：[<span class="number">123321</span>]</span><br><span class="line">PASS</span><br><span class="line">ok      golang/study/split      <span class="number">0.001s</span></span><br></pre></td></tr></table></figure>
+
+<p>这个功能是有问题的，当我们的切割符是多个字符时，会测试失败。</p>
+<p>添加测试函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果切割的字符串是多个字符</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSplit3</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := <span class="string">"1200340056007800"</span></span><br><span class="line">    sep := <span class="string">"00"</span></span><br><span class="line">    sp := Split(s, sep)</span><br><span class="line">    sp0 := []<span class="keyword">string</span>&#123;<span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> ok := reflect.DeepEqual(sp, sp0); !ok &#123;</span><br><span class="line">        t.Fatalf(<span class="string">"测试失败，期望得到：%v 实际得到：%v"</span>, sp0, sp)</span><br><span class="line">    &#125;</span><br><span class="line">    t.Logf(<span class="string">"测试通过，得到：%v"</span>, sp0)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~/code/<span class="keyword">go</span>/src/golang/study/split$ <span class="keyword">go</span> test -v -run Split3</span><br><span class="line">=== RUN   TestSplit3</span><br><span class="line">--- FAIL: TestSplit3 (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">38</span>: 测试失败，期望得到：[<span class="number">12</span> <span class="number">34</span> <span class="number">56</span> <span class="number">78</span> ] 实际得到：[<span class="number">12</span> <span class="number">034</span> <span class="number">056</span> <span class="number">078</span> <span class="number">0</span>]</span><br><span class="line">FAIL</span><br><span class="line">exit status <span class="number">1</span></span><br><span class="line">FAIL    golang/study/split      <span class="number">0.001s</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出测试驱动开发，修改我们的代码。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果切割的字符串是多个字符</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSplit3</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := <span class="string">"1200340056007800"</span></span><br><span class="line">    sep := <span class="string">"00"</span></span><br><span class="line">    sp := Split(s, sep)</span><br><span class="line">    sp0 := []<span class="keyword">string</span>&#123;<span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> ok := reflect.DeepEqual(sp, sp0); !ok &#123;</span><br><span class="line">        t.Fatalf(<span class="string">"测试失败，期望得到：%v 实际得到：%v"</span>, sp0, sp)</span><br><span class="line">    &#125;</span><br><span class="line">    t.Logf(<span class="string">"测试通过，得到：%v"</span>, sp0)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续测试：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~/code/<span class="keyword">go</span>/src/golang/study/split$ <span class="keyword">go</span> test -v</span><br><span class="line">=== RUN   TestSplit</span><br><span class="line">--- PASS: TestSplit (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">16</span>: 测试通过，得到：[a b c]</span><br><span class="line">=== RUN   TestSplit2</span><br><span class="line">--- PASS: TestSplit2 (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">28</span>: 测试通过，得到：[<span class="number">123321</span>]</span><br><span class="line">=== RUN   TestSplit3</span><br><span class="line">--- PASS: TestSplit3 (<span class="number">0.00s</span>)</span><br><span class="line">    split_test.<span class="keyword">go</span>:<span class="number">40</span>: 测试通过，得到：[<span class="number">12</span> <span class="number">34</span> <span class="number">56</span> <span class="number">78</span> ]</span><br><span class="line">PASS</span><br><span class="line">ok      golang/study/split      <span class="number">0.001s</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="测试组"><a href="#测试组" class="headerlink" title="测试组"></a>测试组</h3><p>将多个测试用例放到一起就是测试组。</p>
+<p>上面我们测试了三个功能，用了三个函数，这次我们只编写一个测试函数来完成所有的测试。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line">        get := Split(tc.str, tc.sep)</span><br><span class="line">        <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">            t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">        &#125;</span><br><span class="line">        t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    split_test.go:26: 测试split1通过，得到：[]string&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;&#125;</span><br><span class="line">    split_test.go:26: 测试split2通过，得到：[]string&#123;&quot;123321&quot;&#125;</span><br><span class="line">    split_test.go:26: 测试split3通过，得到：[]string&#123;&quot;&quot;, &quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<h3 id="子测试"><a href="#子测试" class="headerlink" title="子测试"></a>子测试</h3><p>上面的测试组也挺方便，但是当测试用例过多的时候，无法一目了然看出哪个测试失败，无法控制我执行某个测试用例。在<code>go 1.7+</code>版本中加入了子测试。我们可以按照如下方式使用<code>t.Run</code>执行子测试：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line">        t.Run(testName, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">            get := Split(tc.str, tc.sep)</span><br><span class="line">            <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">                t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">            &#125;</span><br><span class="line">            t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样做有什么好处呢？看看就知道了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split1</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split2</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split3</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    --- PASS: TestGroup&#x2F;split1 (0.00s)</span><br><span class="line">        split_test.go:27: 测试split1通过，得到：[]string&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;&#125;</span><br><span class="line">    --- PASS: TestGroup&#x2F;split2 (0.00s)</span><br><span class="line">        split_test.go:27: 测试split2通过，得到：[]string&#123;&quot;123321&quot;&#125;</span><br><span class="line">    --- PASS: TestGroup&#x2F;split3 (0.00s)</span><br><span class="line">        split_test.go:27: 测试split3通过，得到：[]string&#123;&quot;&quot;, &quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<p>是不是更详细了，还有更好玩的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test --run &#x2F;split3 -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split3</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    --- PASS: TestGroup&#x2F;split3 (0.00s)</span><br><span class="line">        split_test.go:27: 测试split3通过，得到：[]string&#123;&quot;&quot;, &quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，和我们之前编写的三个测试用例一样，可以单独对一个用例进行测试。</p>
+<h3 id="测试覆盖率"><a href="#测试覆盖率" class="headerlink" title="测试覆盖率"></a>测试覆盖率</h3><p>测试覆盖率是你的代码被测试套件覆盖的百分比。通常我们使用的都是语句的覆盖率，也就是在测试中至少被运行一次的代码占总代码的比例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -cover</span><br><span class="line">PASS</span><br><span class="line">coverage: 100.0% of statements</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<p>从上面的结果可以看到我们的测试用例覆盖了100%的代码。</p>
+<p>我们在我们的功能代码中写一个与我们的测试模块功能无关的函数，看看测试覆盖率变成了多少：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Add</span><span class="params">(a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -cover</span><br><span class="line">PASS</span><br><span class="line">coverage: 87.5% of statements</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<p>另外一些功能</p>
+<ul>
+<li>将覆盖率的日志记录输出到文件：<code>go test -cover -coverprofile=c.out</code></li>
+<li>以html方式打开上一步生成的文件：<code>go tool cover -html=c.out</code></li>
+</ul>
+<h2 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h2><p>测试性能</p>
+<h3 id="基准测试函数格式"><a href="#基准测试函数格式" class="headerlink" title="基准测试函数格式"></a>基准测试函数格式</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkName</span><span class="params">(b *testing.B)</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基准测试示例"><a href="#基准测试示例" class="headerlink" title="基准测试示例"></a>基准测试示例</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkSplit</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    b.Log(<span class="string">"这是一个基准测试"</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">        Split(<span class="string">"a:b:c"</span>, <span class="string">":"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -bench&#x3D;Split</span><br><span class="line">goos: linux</span><br><span class="line">goarch: amd64</span><br><span class="line">pkg: golang&#x2F;study&#x2F;split</span><br><span class="line">BenchmarkSplit-4        10000000               223 ns&#x2F;op</span><br><span class="line">--- BENCH: BenchmarkSplit-4</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      2.471s</span><br></pre></td></tr></table></figure>
+
+<p>我们还可以为基准测试添加<code>-benchmem</code>参数，来获得内存分配的统计数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -bench&#x3D;Split -benchmem</span><br><span class="line">goos: linux</span><br><span class="line">goarch: amd64</span><br><span class="line">pkg: golang&#x2F;study&#x2F;split</span><br><span class="line">BenchmarkSplit-4        10000000               220 ns&#x2F;op             112 B&#x2F;op          3 allocs&#x2F;op</span><br><span class="line">--- BENCH: BenchmarkSplit-4</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      2.436s</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>112 B/op</code>表示每次操作内存分配了112字节，<code>3 allocs/op</code>则表示每次操作进行了3次内存分配。 我们将我们的<code>Split</code>函数优化如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"strings"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个字符串切割的函数，用sep切割原字符串，并返回切割后的字符串切片</span></span><br><span class="line"><span class="comment">// a:b:c --&gt; [a b c]</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Split</span><span class="params">(s, sep <span class="keyword">string</span>)</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="comment">// 提前申请好容量</span></span><br><span class="line">    count := strings.Count(s, sep)</span><br><span class="line">    result := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>, count+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    index := strings.Index(s, sep)</span><br><span class="line">    <span class="keyword">for</span> index &gt;= <span class="number">0</span> &#123;</span><br><span class="line">        result = <span class="built_in">append</span>(result, s[:index])</span><br><span class="line">        s = s[index+<span class="built_in">len</span>(sep):]</span><br><span class="line">        index = strings.Index(s, sep)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">append</span>(result, s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一次我们提前使用make函数将result初始化为一个容量足够大的切片，而不再像之前一样通过调用append函数来追加。我们来看一下这个改进会带来多大的性能提升：</p>
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -bench&#x3D;Split -benchmem</span><br><span class="line">goos: linux</span><br><span class="line">goarch: amd64</span><br><span class="line">pkg: golang&#x2F;study&#x2F;split</span><br><span class="line">BenchmarkSplit-4        20000000               107 ns&#x2F;op              48 B&#x2F;op          1 allocs&#x2F;op</span><br><span class="line">--- BENCH: BenchmarkSplit-4</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">    split_test.go:6: 这是一个基准测试</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      2.260s</span><br></pre></td></tr></table></figure>
+
+<p>这个使用make函数提前分配内存的改动，减少了2/3的内存分配次数，并且减少了一半的内存分配。</p>
+<h3 id="性能比较函数"><a href="#性能比较函数" class="headerlink" title="性能比较函数"></a>性能比较函数</h3><p>编写斐波拉契函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> fib</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Fib</span><span class="params">(n <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n &lt; <span class="number">2</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> n</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Fib(n<span class="number">-1</span>) + Fib(n<span class="number">-2</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编写性能比较函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> fib</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">benchmarkFib</span><span class="params">(b *testing.B, n <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">        Fib(n)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkFib1</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    benchmarkFib(b, <span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkFib2</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    benchmarkFib(b, <span class="number">2</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkFib20</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    benchmarkFib(b, <span class="number">20</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkFib40</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    benchmarkFib(b, <span class="number">40</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;fib$ go test -bench&#x3D;.</span><br><span class="line">goos: linux</span><br><span class="line">goarch: amd64</span><br><span class="line">pkg: golang&#x2F;study&#x2F;fib</span><br><span class="line">BenchmarkFib1-4         1000000000               2.27 ns&#x2F;op</span><br><span class="line">BenchmarkFib2-4         200000000                6.40 ns&#x2F;op</span><br><span class="line">BenchmarkFib20-4           30000             46833 ns&#x2F;op</span><br><span class="line">BenchmarkFib40-4               2         703580232 ns&#x2F;op</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;fib        8.512s</span><br></pre></td></tr></table></figure>
+
+<h3 id="重置时间"><a href="#重置时间" class="headerlink" title="重置时间"></a>重置时间</h3><p><code>b.ResetTimer</code>之前的处理不会放到执行时间里，也不会输出到报告中，例如一些连接数据库的操作，不应该计算在内的，所以可以在之前做一些不计划作为测试报告的操作。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkSplit</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    time.Sleep(<span class="number">5</span> * time.Second) <span class="comment">// 假设需要做一些耗时的无关操作</span></span><br><span class="line">    b.ResetTimer()              <span class="comment">// 重置计时器</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">        Split(<span class="string">"沙河有沙又有河"</span>, <span class="string">"沙"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="并行测试"><a href="#并行测试" class="headerlink" title="并行测试"></a>并行测试</h3><p><code>RunParallel</code>会创建出多个<code>goroutine</code>，并将<code>b.N</code>分配给这些<code>goroutine</code>执行， 其中<code>goroutine</code>数量的默认值为<code>GOMAXPROCS</code>。用户如果想要增加非CPU受限（non-CPU-bound）基准测试的并行性， 那么可以在<code>RunParallel</code>之前调用<code>SetParallelism</code> 。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkSplit</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    b.RunParallel(<span class="function"><span class="keyword">func</span><span class="params">(pb *testing.PB)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> pb.Next() &#123;</span><br><span class="line">            Split(<span class="string">"a:b:c"</span>, <span class="string">":"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkSplit1</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">        Split(<span class="string">"a:b:c"</span>, <span class="string">":"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -bench&#x3D;. -v</span><br><span class="line">goos: linux</span><br><span class="line">goarch: amd64</span><br><span class="line">pkg: golang&#x2F;study&#x2F;split</span><br><span class="line">BenchmarkSplit-4        20000000                64.4 ns&#x2F;op</span><br><span class="line">BenchmarkSplit1-4       20000000               111 ns&#x2F;op</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      3.692s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Setup与TearDown"><a href="#Setup与TearDown" class="headerlink" title="Setup与TearDown"></a>Setup与TearDown</h2><p>测试程序有时需要在测试之前进行额外的设置（setup）或在测试之后进行拆卸（teardown）。</p>
+<p>比如说测试之前进行数据库的连接。</p>
+<h3 id="TestMain"><a href="#TestMain" class="headerlink" title="TestMain"></a>TestMain</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestSplit</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    s := <span class="string">"1200340056007800"</span></span><br><span class="line">    sep := <span class="string">"00"</span></span><br><span class="line">    sp := Split(s, sep)</span><br><span class="line">    sp0 := []<span class="keyword">string</span>&#123;<span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> ok := reflect.DeepEqual(sp, sp0); !ok &#123;</span><br><span class="line">        t.Fatalf(<span class="string">"测试失败，期望得到：%#v 实际得到：%#v"</span>, sp0, sp)</span><br><span class="line">    &#125;</span><br><span class="line">    t.Logf(<span class="string">"测试通过，得到：%#v"</span>, sp0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestMain</span><span class="params">(m *testing.M)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 测试之前的做一些设置</span></span><br><span class="line">    fmt.Println(<span class="string">"write setup code here..."</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果 TestMain 使用了 flags，这里应该加上flag.Parse()</span></span><br><span class="line">    <span class="comment">// 执行测试，成功或失败会返回一个状态吗，退出需传入</span></span><br><span class="line">    retCode := m.Run()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试之后做一些拆卸工作</span></span><br><span class="line">    fmt.Println(<span class="string">"write teardown code here..."</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 退出测试</span></span><br><span class="line">    os.Exit(retCode)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v</span><br><span class="line">write setup code here...</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestSplit</span><br><span class="line">--- PASS: TestSplit (0.00s)</span><br><span class="line">    split_test.go:18: 测试通过，得到：[]string&#123;&quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">PASS</span><br><span class="line">write teardown code here...</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<h3 id="组测试的Setup与TearDown"><a href="#组测试的Setup与TearDown" class="headerlink" title="组测试的Setup与TearDown"></a>组测试的Setup与TearDown</h3><p>有时候我们可能需要为每个测试集设置Setup与Teardown：</p>
+<p>编写测试函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试组的Setup与Teardown</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupTestCase</span><span class="params">(t *testing.T)</span> <span class="title">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Log(<span class="string">"测试之前"</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        t.Log(<span class="string">"测试之后"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试之前执行setup操作</span></span><br><span class="line">    teardownTestCase := setupTestCase(t)</span><br><span class="line">    <span class="comment">// 测试之后执行testdoen操作</span></span><br><span class="line">    <span class="keyword">defer</span> teardownTestCase(t)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line">        get := Split(tc.str, tc.sep)</span><br><span class="line">        <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">            t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">        &#125;</span><br><span class="line">        t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    split_test.go:10: 测试之前</span><br><span class="line">    split_test.go:39: 测试split1通过，得到：[]string&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;&#125;</span><br><span class="line">    split_test.go:39: 测试split2通过，得到：[]string&#123;&quot;123321&quot;&#125;</span><br><span class="line">    split_test.go:39: 测试split3通过，得到：[]string&#123;&quot;&quot;, &quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">    split_test.go:12: 测试之后</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.002s</span><br></pre></td></tr></table></figure>
+
+<h3 id="子测试的Setup与TearDown"><a href="#子测试的Setup与TearDown" class="headerlink" title="子测试的Setup与TearDown"></a>子测试的Setup与TearDown</h3><p>有可能需要为每个子测试设置Setup与Teardown。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子测试的Setup与Teardown</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupSubTest</span><span class="params">(t *testing.T)</span> <span class="title">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Log(<span class="string">"测试之前"</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        t.Log(<span class="string">"测试之后"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line"></span><br><span class="line">        t.Run(testName, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 子测试之前执行setup操作</span></span><br><span class="line">            teardownSubTest := setupSubTest(t)</span><br><span class="line">            <span class="comment">// 子测试之后执行testdoen操作</span></span><br><span class="line">            <span class="keyword">defer</span> teardownSubTest(t)</span><br><span class="line"></span><br><span class="line">            get := Split(tc.str, tc.sep)</span><br><span class="line">            <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">                t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">            &#125;</span><br><span class="line">            t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子测试的Setup与Teardown</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupSubTest</span><span class="params">(t *testing.T)</span> <span class="title">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Log(<span class="string">"测试之前"</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        t.Log(<span class="string">"测试之后"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line"></span><br><span class="line">        t.Run(testName, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 子测试之前执行setup操作</span></span><br><span class="line">            teardownSubTest := setupSubTest(t)</span><br><span class="line">            <span class="comment">// 子测试之后执行testdoen操作</span></span><br><span class="line">            <span class="keyword">defer</span> teardownSubTest(t)</span><br><span class="line"></span><br><span class="line">            get := Split(tc.str, tc.sep)</span><br><span class="line">            <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">                t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">            &#125;</span><br><span class="line">            t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"reflect"</span></span><br><span class="line">    <span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子测试的Setup与Teardown</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupSubTest</span><span class="params">(t *testing.T)</span> <span class="title">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Log(<span class="string">"测试之前"</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        t.Log(<span class="string">"测试之后"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGroup</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="keyword">type</span> test <span class="keyword">struct</span> &#123;</span><br><span class="line">        str  <span class="keyword">string</span></span><br><span class="line">        sep  <span class="keyword">string</span></span><br><span class="line">        want []<span class="keyword">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tests := <span class="keyword">map</span>[<span class="keyword">string</span>]test&#123;</span><br><span class="line">        <span class="string">"split1"</span>: &#123;<span class="string">"a:b:c"</span>, <span class="string">":"</span>, []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split2"</span>: &#123;<span class="string">"123321"</span>, <span class="string">"0"</span>, []<span class="keyword">string</span>&#123;<span class="string">"123321"</span>&#125;&#125;,</span><br><span class="line">        <span class="string">"split3"</span>: &#123;<span class="string">"001200340056007800"</span>, <span class="string">"00"</span>, []<span class="keyword">string</span>&#123;<span class="string">""</span>, <span class="string">"12"</span>, <span class="string">"34"</span>, <span class="string">"56"</span>, <span class="string">"78"</span>, <span class="string">""</span>&#125;&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> testName, tc := <span class="keyword">range</span> tests &#123;</span><br><span class="line"></span><br><span class="line">        t.Run(testName, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 子测试之前执行setup操作</span></span><br><span class="line">            teardownSubTest := setupSubTest(t)</span><br><span class="line">            <span class="comment">// 子测试之后执行testdoen操作</span></span><br><span class="line">            <span class="keyword">defer</span> teardownSubTest(t)</span><br><span class="line"></span><br><span class="line">            get := Split(tc.str, tc.sep)</span><br><span class="line">            <span class="keyword">if</span> !reflect.DeepEqual(get, tc.want) &#123;</span><br><span class="line">                t.Fatalf(<span class="string">"测试%v失败，期望得到：%#v 实际得到：%#v"</span>, testName, tc.want, get)</span><br><span class="line">            &#125;</span><br><span class="line">            t.Logf(<span class="string">"测试%v通过，得到：%#v"</span>, testName, tc.want)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v </span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split1</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split2</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split3</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    --- PASS: TestGroup&#x2F;split1 (0.00s)</span><br><span class="line">        split_test.go:10: 测试之前</span><br><span class="line">        split_test.go:42: 测试split1通过，得到：[]string&#123;&quot;a&quot;, &quot;b&quot;, &quot;c&quot;&#125;</span><br><span class="line">        split_test.go:12: 测试之后</span><br><span class="line">    --- PASS: TestGroup&#x2F;split2 (0.00s)</span><br><span class="line">        split_test.go:10: 测试之前</span><br><span class="line">        split_test.go:42: 测试split2通过，得到：[]string&#123;&quot;123321&quot;&#125;</span><br><span class="line">        split_test.go:12: 测试之后</span><br><span class="line">    --- PASS: TestGroup&#x2F;split3 (0.00s)</span><br><span class="line">        split_test.go:10: 测试之前</span><br><span class="line">        split_test.go:42: 测试split3通过，得到：[]string&#123;&quot;&quot;, &quot;12&quot;, &quot;34&quot;, &quot;56&quot;, &quot;78&quot;, &quot;&quot;&#125;</span><br><span class="line">        split_test.go:12: 测试之后</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br><span class="line"></span><br><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -v -run &#x2F;split2</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   TestGroup&#x2F;split2</span><br><span class="line">--- PASS: TestGroup (0.00s)</span><br><span class="line">    --- PASS: TestGroup&#x2F;split2 (0.00s)</span><br><span class="line">        split_test.go:10: 测试之前</span><br><span class="line">        split_test.go:42: 测试split2通过，得到：[]string&#123;&quot;123321&quot;&#125;</span><br><span class="line">        split_test.go:12: 测试之后</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例函数"><a href="#示例函数" class="headerlink" title="示例函数"></a>示例函数</h2><p>下面的代码是我们为<code>Split</code>函数编写的一个示例函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleSplit</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(Split(<span class="string">"a:b:c"</span>, <span class="string">":"</span>))</span><br><span class="line">    fmt.Println(Split(<span class="string">"00110022003300"</span>, <span class="string">"00"</span>))</span><br><span class="line">    <span class="comment">// Output:</span></span><br><span class="line">    <span class="comment">// [a b c]</span></span><br><span class="line">    <span class="comment">// [ 11 22 33 ]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -run Split -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   ExampleSplit</span><br><span class="line">--- PASS: ExampleSplit (0.00s)</span><br><span class="line">PASS</span><br><span class="line">ok      golang&#x2F;study&#x2F;split      0.001s</span><br></pre></td></tr></table></figure>
+
+<p>修改<code>Output</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> split</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleSplit</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(Split(<span class="string">"a:b:c"</span>, <span class="string">":"</span>))</span><br><span class="line">    fmt.Println(Split(<span class="string">"00110022003300"</span>, <span class="string">"00"</span>))</span><br><span class="line">    <span class="comment">// Output:</span></span><br><span class="line">    <span class="comment">// [a b c]</span></span><br><span class="line">    <span class="comment">// [11 22 33]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">jiang_wei@master01:~&#x2F;code&#x2F;go&#x2F;src&#x2F;golang&#x2F;study&#x2F;split$ go test -run Split -v</span><br><span class="line">&#x3D;&#x3D;&#x3D; RUN   ExampleSplit</span><br><span class="line">--- FAIL: ExampleSplit (0.00s)</span><br><span class="line">got:</span><br><span class="line">[a b c]</span><br><span class="line">[ 11 22 33 ]</span><br><span class="line">want:</span><br><span class="line">[a b c]</span><br><span class="line">[11 22 33]</span><br><span class="line">FAIL</span><br><span class="line">exit status 1</span><br><span class="line">FAIL    golang&#x2F;study&#x2F;split      0.002s</span><br></pre></td></tr></table></figure>
+
+
+
+<p>　</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/echo-request.html" rel="next" title="echo-request">
+                <i class="fa fa-chevron-left"></i> echo-request
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/echo-response.html" rel="prev" title="echo-response">
+                echo-response <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#go语言的测试"><span class="nav-number">1.</span> <span class="nav-text">go语言的测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#go-test-工具"><span class="nav-number">1.1.</span> <span class="nav-text">go test 工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试函数"><span class="nav-number">1.2.</span> <span class="nav-text">测试函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#测试函数的格式"><span class="nav-number">1.2.1.</span> <span class="nav-text">测试函数的格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试函数的示例"><span class="nav-number">1.2.2.</span> <span class="nav-text">测试函数的示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#需要测试的代码"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">需要测试的代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编写测试函数"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">编写测试函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试所有"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">测试所有</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试的详细信息"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">测试的详细信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试单个"><span class="nav-number">1.2.2.5.</span> <span class="nav-text">测试单个</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试组"><span class="nav-number">1.2.3.</span> <span class="nav-text">测试组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子测试"><span class="nav-number">1.2.4.</span> <span class="nav-text">子测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试覆盖率"><span class="nav-number">1.2.5.</span> <span class="nav-text">测试覆盖率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基准测试"><span class="nav-number">1.3.</span> <span class="nav-text">基准测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基准测试函数格式"><span class="nav-number">1.3.1.</span> <span class="nav-text">基准测试函数格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基准测试示例"><span class="nav-number">1.3.2.</span> <span class="nav-text">基准测试示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能比较函数"><span class="nav-number">1.3.3.</span> <span class="nav-text">性能比较函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重置时间"><span class="nav-number">1.3.4.</span> <span class="nav-text">重置时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行测试"><span class="nav-number">1.3.5.</span> <span class="nav-text">并行测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup与TearDown"><span class="nav-number">1.4.</span> <span class="nav-text">Setup与TearDown</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TestMain"><span class="nav-number">1.4.1.</span> <span class="nav-text">TestMain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组测试的Setup与TearDown"><span class="nav-number">1.4.2.</span> <span class="nav-text">组测试的Setup与TearDown</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子测试的Setup与TearDown"><span class="nav-number">1.4.3.</span> <span class="nav-text">子测试的Setup与TearDown</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例函数"><span class="nav-number">1.5.</span> <span class="nav-text">示例函数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

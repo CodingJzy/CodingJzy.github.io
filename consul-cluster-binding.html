@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="consul集群搭建" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="consul集群搭建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="consul集群搭建">
+<meta property="og:url" content="https://jiangziya.top/consul-cluster-binding.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="consul集群搭建">
+<meta property="og:image" content="https://jiangziya.top/uploads/server%E8%8A%82%E7%82%B9.jpg">
+<meta property="og:image" content="https://jiangziya.top/uploads/%E9%9B%86%E7%BE%A4.jpg">
+<meta property="og:image" content="https://jiangziya.top/uploads/key.jpg">
+<meta property="article:published_time" content="2019-07-29T08:59:54.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.851Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="consul集群搭建">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jiangziya.top/uploads/server%E8%8A%82%E7%82%B9.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/consul-cluster-binding.html"/>
+
+
+
+
+
+  <title>consul集群搭建 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/consul-cluster-binding.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">consul集群搭建</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-29T16:59:54+08:00">
+                2019-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Consul/" itemprop="url" rel="index">
+                    <span itemprop="name">Consul</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  consul集群搭建
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="consul"><a href="#consul" class="headerlink" title="consul"></a>consul</h1><h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>可以去官网下载，也可以通过go环境编译成二进制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 安装版本</span><br><span class="line">CONSUL_VERSION&#x3D;&quot;1.5.3&quot;</span><br><span class="line"></span><br><span class="line"># 下载文件</span><br><span class="line">curl --silent --remote-name https:&#x2F;&#x2F;releases.hashicorp.com&#x2F;consul&#x2F;$&#123;CONSUL_VERSION&#125;&#x2F;consul_$&#123;CONSUL_VERSION&#125;_linux_amd64.zip</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>将下载好的zip文件通过<code>unzip</code>命令解压缩。之后将二进制文件移动到<code>/usr/local/bin/</code>目录下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 解压缩</span><br><span class="line">unzip consul_$&#123;CONSUL_VERSION&#125;_linux_amd64.zip</span><br><span class="line"></span><br><span class="line"># 移动</span><br><span class="line">mv consul &#x2F;usr&#x2F;local&#x2F;bin&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置自动补全"><a href="#配置自动补全" class="headerlink" title="配置自动补全"></a>配置自动补全</h2><p>配置完成后，按<code>tab</code>键补全的效果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd01 home]# consul </span><br><span class="line">acl          connect      force-leave  keygen       lock         members      rtt          validate     </span><br><span class="line">agent        debug        info         keyring      login        monitor      services     version      </span><br><span class="line">catalog      event        intention    kv           logout       operator     snapshot     watch        </span><br><span class="line">config       exec         join         leave        maint        reload       tls </span><br><span class="line"></span><br><span class="line">[root@jw-etcd01 home]# consul kv </span><br><span class="line">delete  export  get     import  put</span><br></pre></td></tr></table></figure>
+
+<p>执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">consul -autocomplete-install</span><br><span class="line">complete -C &#x2F;usr&#x2F;local&#x2F;bin&#x2F;consul consul</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写systemd服务"><a href="#编写systemd服务" class="headerlink" title="编写systemd服务"></a>编写systemd服务</h2><p>编写<code>systemd</code>服务之后，方便服务的启动与暂停。</p>
+<p>创建consul服务文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;consul.service</span><br></pre></td></tr></table></figure>
+
+<p>将配置添加到此文件中，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;&quot;HashiCorp Consul - A service mesh solution&quot;</span><br><span class="line">Documentation&#x3D;https:&#x2F;&#x2F;www.consul.io&#x2F;</span><br><span class="line">Requires&#x3D;network-online.target</span><br><span class="line">After&#x3D;network-online.target</span><br><span class="line">ConditionFileNotEmpty&#x3D;&#x2F;etc&#x2F;consul&#x2F;consul.d&#x2F;consul.hcl</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart&#x3D;&#x2F;root&#x2F;consul&#x2F;consul agent -config-dir&#x3D;&#x2F;etc&#x2F;consul&#x2F;consul.d&#x2F;</span><br><span class="line">ExecReload&#x3D;&#x2F;root&#x2F;consul&#x2F;consul reload</span><br><span class="line">KillMode&#x3D;process</span><br><span class="line">Restart&#x3D;on-failure</span><br><span class="line">LimitNOFILE&#x3D;65536</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ul>
+<li><code>Description</code>：描述<code>consul</code>服务</li>
+<li><code>Documentation</code>：连接到<code>consul</code>文档</li>
+<li><code>ConditionFileNotEmpty</code>：在启动服务之前，检查配置文件是否为空</li>
+<li><code>ExecStart</code>：启动<code>consul</code>服务的命令</li>
+<li><code>ExecReload</code>：向<code>consul</code>发送重载信号以触发<code>consul</code>中的重新加载配置</li>
+<li><code>KillMode</code>：将 <code>consul</code>视为一个进程</li>
+</ul>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>和<code>etcd</code>类似，都可以通过命令行、环境变量、配置文件来启动<code>consul</code>。</p>
+<p>更多配置请参照官网。</p>
+<h3 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h3><h4 id="一般配置"><a href="#一般配置" class="headerlink" title="一般配置"></a>一般配置</h4><p>在以下位置创建配置文件：<code>/etc/consul/consul.d/consul.hcl</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 创建配置文件文件夹</span><br><span class="line">mkdir -p &#x2F;etc&#x2F;consul&#x2F;consul.d</span><br><span class="line"></span><br><span class="line"># 编辑配置文件</span><br><span class="line">vim &#x2F;etc&#x2F;consul&#x2F;consul.d&#x2F;consul.hcl</span><br><span class="line">datacenter &#x3D; &quot;dc1&quot;</span><br><span class="line">data_dir &#x3D; &quot;&#x2F;etc&#x2F;consul&#x2F;data&#x2F;&quot;</span><br><span class="line">encrypt &#x3D; &quot;4iwDbM&#x2F;GTs62B020zTUdUQ&#x3D;&#x3D;&quot;</span><br><span class="line">client_addr&#x3D;&quot;172.19.19.124 127.0.0.1&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong></p>
+<ul>
+<li><code>datacenter</code>：集群的数据中心，多个集群可以同时使用多个数据中心。我们只部署一个集群就使用同一个数据中心</li>
+<li><code>data_dir</code>：<code>agent</code>存储状态的数据目录</li>
+<li><code>encrypt</code>：指定用于加密<code>consul</code>网络流量的base64密钥，可以用<code>consul keygen</code>生存或者自己通过其他方式生成</li>
+<li><code>client_addr</code>：<code>consul</code>将绑定客户端接口的地址，包括HTTP和DNS服务器。默认是<code>127.0.0.1</code>，可以将其设置为以空格分割的列表</li>
+</ul>
+<h4 id="集群自动加入"><a href="#集群自动加入" class="headerlink" title="集群自动加入"></a>集群自动加入</h4><p>我这里是因为搭建了<code>dnsmasq</code>dns服务器。在该dns服务器的机器上配置了<code>hosts</code>，这样可以通过它来管理和控制内网的dns。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd03 consul.d]# cat &#x2F;etc&#x2F;hosts</span><br><span class="line">127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4</span><br><span class="line">::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</span><br><span class="line"></span><br><span class="line"># add consul</span><br><span class="line">172.19.19.124 test-consul.com</span><br></pre></td></tr></table></figure>
+
+<p>该配置表示，该内网中的所有用户访问<code>test-consul.com</code>时跳转到<code>172.19.19.124</code>。也可以称为<code>dns 劫持</code>。</p>
+<p>该<code>retry_join</code>参数允许使用通过DNS地址，IP地址或使用云自动连接访问的公共Consul服务器配置所有Consul代理以自动形成群集。这消除了手动将Consul集群节点连接在一起的需要。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retry_join &#x3D; [&quot;test-consul.com&quot;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="服务器配置"><a href="#服务器配置" class="headerlink" title="服务器配置"></a>服务器配置</h4><p>在以下位置创建配置文件<code>/etc/consul/consul.d/server.hcl</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd03 consul.d]# cat server.hcl </span><br><span class="line">server &#x3D; true</span><br><span class="line">bootstrap_expect &#x3D; 2</span><br><span class="line">ui &#x3D; true</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：</strong></p>
+<ul>
+<li><code>server</code>：此标志用于控制该<code>agent</code>是处于服务器模式还是客户端模式</li>
+<li><code>bootstrap_expect</code>：此标志提供数据中心中预期的服务器数。不应提供此值，或者该值必须与群集中的其他服务器一致。和<code>etcd</code>一样推荐使用单数。我这里因为演示不搭建那么多机器</li>
+<li><code>ui</code>：<code>consul</code>自带的一个web界面。应该考虑选定的Consul机器而不是所有机器上运行Consul UI</li>
+</ul>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>Consul客户端通常需要Consul服务器所需的配置子集。所有Consul客户端都可以使用配置服务器时创建的文件<code>consul.hcl</code>。</p>
+<h2 id="启动与测试"><a href="#启动与测试" class="headerlink" title="启动与测试"></a>启动与测试</h2><p>通过之前编写的<code>systmed</code>服务来控制<code>consul</code>服务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable consul</span><br><span class="line">systemctl start consul</span><br><span class="line">systemctl status consul</span><br><span class="line">systemctl restart consul</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看集群成员状态"><a href="#查看集群成员状态" class="headerlink" title="查看集群成员状态"></a>查看集群成员状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd02 consul]# consul members </span><br><span class="line">Node       Address             Status  Type    Build  Protocol  DC   Segment</span><br><span class="line">jw-etcd01  172.19.19.122:8301  alive   server  1.5.3  2         dc1  &lt;all&gt;</span><br><span class="line">jw-etcd03  172.19.19.124:8301  alive   server  1.5.3  2         dc1  &lt;all&gt;</span><br><span class="line">jw-etcd02  172.19.19.123:8301  alive   client  1.5.3  2         dc1  &lt;default&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="put"><a href="#put" class="headerlink" title="put"></a>put</h3><p>在<code>jw-etcd01</code>(server)机器上<code>put</code>一个值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd01 consul.d]# consul kv put name jiang_wei</span><br><span class="line">Success! Data written to: name</span><br></pre></td></tr></table></figure>
+
+<h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>在<code>jw-etcd02</code>(client)机器上<code>get</code>一个值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@jw-etcd02 consul]# consul kv get name</span><br><span class="line">jiang_wei</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，成功。</p>
+<h2 id="ui"><a href="#ui" class="headerlink" title="ui"></a>ui</h2><p> 因为上面配置了<code>ui</code>，还可以通过web界面来看服务状态。</p>
+<p>浏览器访问：<code>http://172.19.19.124:8500/ui/</code>。</p>
+<p>给几个图，自己体会：</p>
+<h3 id="server"><a href="#server" class="headerlink" title="server"></a>server</h3><p><img src="/uploads/server%E8%8A%82%E7%82%B9.jpg" alt=""></p>
+<h3 id="cluster"><a href="#cluster" class="headerlink" title="cluster"></a>cluster</h3><p><img src="/uploads/%E9%9B%86%E7%BE%A4.jpg" alt=""></p>
+<h3 id="key"><a href="#key" class="headerlink" title="key"></a>key</h3><p><img src="/uploads/key.jpg" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/go%E8%AF%AD%E8%A8%80%E7%9A%84%E5%B9%B6%E5%8F%91.html" rel="next" title="go语言的并发">
+                <i class="fa fa-chevron-left"></i> go语言的并发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/consul-agent.html" rel="prev" title="Consul Agent">
+                Consul Agent <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#consul"><span class="nav-number">1.</span> <span class="nav-text">consul</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载"><span class="nav-number">1.1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置自动补全"><span class="nav-number">1.3.</span> <span class="nav-text">配置自动补全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写systemd服务"><span class="nav-number">1.4.</span> <span class="nav-text">编写systemd服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">1.5.</span> <span class="nav-text">配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端"><span class="nav-number">1.5.1.</span> <span class="nav-text">服务端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一般配置"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">一般配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群自动加入"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">集群自动加入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器配置"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">服务器配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端"><span class="nav-number">1.5.2.</span> <span class="nav-text">客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动与测试"><span class="nav-number">1.6.</span> <span class="nav-text">启动与测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看集群成员状态"><span class="nav-number">1.6.1.</span> <span class="nav-text">查看集群成员状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#put"><span class="nav-number">1.6.2.</span> <span class="nav-text">put</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get"><span class="nav-number">1.6.3.</span> <span class="nav-text">get</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ui"><span class="nav-number">1.7.</span> <span class="nav-text">ui</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#server"><span class="nav-number">1.7.1.</span> <span class="nav-text">server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cluster"><span class="nav-number">1.7.2.</span> <span class="nav-text">cluster</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#key"><span class="nav-number">1.7.3.</span> <span class="nav-text">key</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

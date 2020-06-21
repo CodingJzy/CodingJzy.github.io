@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="go语言的并发，通道，互斥锁" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="go语言的并发，通道，锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go语言的并发">
+<meta property="og:url" content="https://jiangziya.top/go%E8%AF%AD%E8%A8%80%E7%9A%84%E5%B9%B6%E5%8F%91.html">
+<meta property="og:site_name" content="江子牙">
+<meta property="og:description" content="go语言的并发，通道，锁">
+<meta property="article:published_time" content="2019-07-27T16:21:29.000Z">
+<meta property="article:modified_time" content="2020-06-21T04:39:13.864Z">
+<meta property="article:author" content="JiangZiYa">
+<meta property="article:tag" content="go语言的并发，通道，互斥锁">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://jiangziya.top/go语言的并发.html"/>
+
+
+
+
+
+  <title>go语言的并发 | 江子牙</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ee4786c90511aa3814af4b7c6537a3b5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">江子牙</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">发抖的小喵喵</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiangziya.top/go%E8%AF%AD%E8%A8%80%E7%9A%84%E5%B9%B6%E5%8F%91.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JiangZiYa">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="江子牙">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">go语言的并发</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-28T00:21:29+08:00">
+                2019-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index">
+                    <span itemprop="name">Go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+              <div class="post-description">
+                  go语言的并发，通道，锁
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="go语言的并发"><a href="#go语言的并发" class="headerlink" title="go语言的并发"></a>go语言的并发</h1><h2 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h2><ul>
+<li>并发：同一时间段内执行多个任务</li>
+<li>并行：同一时刻执行多个任务 </li>
+</ul>
+<p>go语言的并发通过<code>goroutine</code>实现。<code>goroutine</code>类似于线程，属于用户态的线程，我们可以根据需要创建成千上万的<code>goroutine</code>并发工作。</p>
+<p><code>goroutine</code>是由go语言运行时调度完成，而线程是由操作系统调度完成。</p>
+<h2 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h2><p>Go程序中使用go关键字为一个函数创建一个<code>goroutine</code>。一个<code>goroutine</code>对应一个(任务)函数。</p>
+<h3 id="启动单个goroutine"><a href="#启动单个goroutine" class="headerlink" title="启动单个goroutine"></a>启动单个goroutine</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动goroutine</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"hello go1"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 创建一个任务</span></span><br><span class="line">    <span class="keyword">go</span> hello()</span><br><span class="line">    <span class="keyword">defer</span> fmt.Println(<span class="string">"main stop"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"hello main "</span>)</span><br><span class="line">    <span class="comment">// 创建一个goroutine需要时间，等一下他</span></span><br><span class="line">    time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="sync-WaitGroup"><a href="#sync-WaitGroup" class="headerlink" title="sync.WaitGroup"></a>sync.WaitGroup</h3><p>用 time模块的方法等待 <code>goroutine</code>结束太生硬，有一个类型能实现优雅的等待</p>
+<ul>
+<li>Add(i)：计数器+1</li>
+<li>Done()：计数器-1，最好用defer语句</li>
+<li>Wait()：等待　　</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明结构体 实现优雅的等待</span></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"hello go1"</span>)</span><br><span class="line">    time.Sleep(<span class="number">5</span> * time.Second)</span><br><span class="line">    fmt.Println(<span class="string">"hello go2"</span>)</span><br><span class="line">    <span class="comment">// 标记该任务已完成 最好用defer语句，保证goroutine出错或异常计数器减1。</span></span><br><span class="line">    <span class="keyword">defer</span> wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> fmt.Println(<span class="string">"main stop"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 标记一个任务</span></span><br><span class="line">    wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> hello()</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"hello main "</span>)</span><br><span class="line">    <span class="comment">// 阻塞，一直等待所有的goroutine结束</span></span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动多个goroutine"><a href="#启动多个goroutine" class="headerlink" title="启动多个goroutine"></a>启动多个goroutine</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(i)</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> hello(i)</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"启动多个goroutine"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(i)</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> hello(i)</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"启动多个goroutine"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多执行几次代码可以发现，每次打印的顺序都不一致，因为这十个<code>goroutine</code>是并发执行的，而<code>goroutine</code>调度又是随机的。</p>
+<h3 id="goroutine与线程"><a href="#goroutine与线程" class="headerlink" title="goroutine与线程"></a>goroutine与线程</h3><h4 id="可增长的栈"><a href="#可增长的栈" class="headerlink" title="可增长的栈"></a>可增长的栈</h4><p>OS线程（操作系统线程）一般都有固定的栈内存（通常为2MB）,一个<code>goroutine</code>的栈在其生命周期开始时只有很小的栈（典型情况下2KB），<code>goroutine</code>的栈不是固定的，他可以按需增大和缩小，<code>goroutine</code>的栈大小限制可以达到1GB，虽然极少会用到这个大。所以在Go语言中一次创建十万左右的<code>goroutine</code>也是可以的。</p>
+<h4 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h4><p>OS线程是由OS内核来调度的，<code>goroutine</code>则是由Go运行时（runtime）自己的调度器调度的，这个调度器使用一个称为m:n调度的技术（复用/调度m个goroutine到n个OS线程）。goroutine的调度不需要切换内核语境，所以调用一个goroutine比调度一个线程成本低很多。</p>
+<h4 id="GOMAXPROCS"><a href="#GOMAXPROCS" class="headerlink" title="GOMAXPROCS"></a>GOMAXPROCS</h4><p>Go运行时的调度器使用<code>GOMAXPROCS</code>参数来确定需要使用多少个OS线程来同时执行Go代码。默认值是机器上的CPU核心数。例如在一个8核心的机器上，调度器会把Go代码同时调度到8个OS线程上（GOMAXPROCS是m:n调度中的n）。</p>
+<p>Go语言中可以通过<code>runtime.GOMAXPROCS()</code>函数设置当前程序并发时占用的CPU逻辑核心数。</p>
+<p>Go1.5版本之前，默认使用的是单核心执行。Go1.5版本之后，默认使用全部的CPU逻辑核心数。</p>
+<h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>单纯的将函数并发执行是没有意义的，函数与函数件需要交换数据才能体现并行函数的意义。</p>
+<p>虽然可以使用共享内存进行数据交换，但是共享内存在不同的<code>goroutine</code>中容易发生竞态问题。为了保证数据交换的正确性和安全性。必须使用互斥量对内存的进行加锁处理，这种做法势必造成性能问题。</p>
+<p>go语言的并发模型是CSP，提倡通过通信共享内存，而不是通过共享内存实现通信。</p>
+<p>如果说<code>groutine</code>是go语言并发的执行体，<code>channel</code>就是执行体之间的连接，<code>channel</code>是可以让一个<code>goroutine</code>发送特定值到另一个<code>goroutine</code>的通信机制。</p>
+<p>Go语言中，<code>channel</code>是一种引用的数据类型。像一个队列，遵循先入先出的规则，保证收发数据的顺序。</p>
+<h3 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h3><p>格式：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> 通道名 <span class="keyword">chan</span> 元素类型</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// channel</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个ch1变量，是一个channel类型，这个channel内部传递的数据是int类型</span></span><br><span class="line">    <span class="comment">// channel是引用类型</span></span><br><span class="line">    <span class="keyword">var</span> ch1 <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">var</span> ch2 <span class="keyword">chan</span> <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"ch1："</span>, ch1)</span><br><span class="line">    fmt.Println(<span class="string">"ch2："</span>, ch2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="channel操作"><a href="#channel操作" class="headerlink" title="channel操作"></a>channel操作</h3><h4 id="发送"><a href="#发送" class="headerlink" title="发送"></a>发送</h4><p>将一个值发送到通道中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 往通道中存取一个10</span></span><br><span class="line">ch &lt;- <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="接受"><a href="#接受" class="headerlink" title="接受"></a>接受</h4><p>从一个通道中取值：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 取出值赋值给一个变量</span></span><br><span class="line">num := &lt;- ch</span><br><span class="line"><span class="comment">// 取出一个值，但是忽略</span></span><br><span class="line">&lt;- ch</span><br></pre></td></tr></table></figure>
+
+<h4 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h4><p>通过内置函数<code>close()</code>来关闭通道：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">close</span>(ch)</span><br></pre></td></tr></table></figure>
+
+<p>通道是可以被垃圾回收机制回收的，和文件关闭不一样，那是必须做的，但关闭通道不是必须的。</p>
+<ul>
+<li>关闭之后可以再取值，如果有值取出来；如果空了，只是为对应类型的零值值而已。</li>
+<li>关闭之后不可以再次发送值，会panic。</li>
+<li>关闭之后不能再关闭。</li>
+</ul>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch3 := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">1</span>)</span><br><span class="line">    fmt.Println(<span class="string">"ch3："</span>, ch3)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通道的操作：发送、接受、关闭</span></span><br><span class="line">    <span class="comment">// 发送和接收  &lt;-</span></span><br><span class="line">    ch3 &lt;- <span class="string">"1"</span>			<span class="comment">// 把10发送的通道中</span></span><br><span class="line">    recv1 := &lt;- ch3	    <span class="comment">// 从通道中取出10，保存到变量中</span></span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"recv1："</span>, recv1)</span><br><span class="line">    ch3 &lt;- <span class="string">"2"</span></span><br><span class="line">    recv2 := &lt;- ch3</span><br><span class="line">    fmt.Println(<span class="string">"recv2："</span>, recv2)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭通道</span></span><br><span class="line">    <span class="built_in">close</span>(ch3)</span><br><span class="line">    <span class="comment">// 1、关闭之后可以再取值，只是为对应类型的nli值而已</span></span><br><span class="line">    fmt.Println(&lt;-ch3)</span><br><span class="line">    <span class="comment">// 2、关闭之后不可以再次发送值，会panic</span></span><br><span class="line">    <span class="comment">// 3、关闭之后不能再关闭</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="缓冲通道"><a href="#缓冲通道" class="headerlink" title="缓冲通道"></a>缓冲通道</h3><h4 id="无缓冲通道"><a href="#无缓冲通道" class="headerlink" title="无缓冲通道"></a>无缓冲通道</h4><p>像四百米接力赛跑一样，棒交接的时候必须有人接棒，不然就会一直阻塞在那。</p>
+<p>这种通道叫无缓冲通道，也称同步通道，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">recv</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">bool</span>)</span></span>  &#123;</span><br><span class="line">    res := &lt;- ch</span><br><span class="line">    fmt.Println(res)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">    <span class="keyword">go</span> recv(ch)</span><br><span class="line">    ch &lt;- <span class="literal">true</span></span><br><span class="line">    fmt.Println(<span class="string">"mai stop"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="有缓冲通道"><a href="#有缓冲通道" class="headerlink" title="有缓冲通道"></a>有缓冲通道</h4><p>拿我们生活的例子，快递员送小区的快递，如果他打电话通知你领取，你不在，他还是会放进去，不会等你，这个丰巢快递柜的格子就是通道的容量。</p>
+<p>只要通道的容量大于０，该通道就是有缓冲的通道，容量表示该通道最多能存放元素的数量。超过容量也会阻塞。</p>
+<p>我们可以用 <code>len()</code>获取通道内元素的数量，使用 <code>cap()</code>函数获取通道的容量。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">recv</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">bool</span>)</span></span>  &#123;</span><br><span class="line">    res := &lt;- ch</span><br><span class="line">    fmt.Println(res)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>, <span class="number">1</span>)</span><br><span class="line">    ch &lt;- <span class="literal">false</span></span><br><span class="line">    fmt.Println(<span class="string">"长度："</span>, <span class="built_in">len</span>(ch), <span class="string">" 容量："</span>, <span class="built_in">cap</span>(ch))</span><br><span class="line">    <span class="keyword">go</span> recv(ch)</span><br><span class="line">    ch &lt;- <span class="literal">true</span></span><br><span class="line">    fmt.Println(<span class="string">"main stop"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="接收值判断通道是否关闭"><a href="#接收值判断通道是否关闭" class="headerlink" title="接收值判断通道是否关闭"></a>接收值判断通道是否关闭</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">send</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>;i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        ch &lt;- i</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">close</span>(ch)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">go</span> send(ch)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 利用的for循环接收</span></span><br><span class="line">    <span class="comment">//for  &#123;</span></span><br><span class="line">    <span class="comment">//	ret, ok := &lt;- ch</span></span><br><span class="line">    <span class="comment">//	if !ok &#123;</span></span><br><span class="line">    <span class="comment">//		break</span></span><br><span class="line">    <span class="comment">//	&#125;</span></span><br><span class="line">    <span class="comment">//	fmt.Println(ret)</span></span><br><span class="line">    <span class="comment">//&#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 利用for range接收</span></span><br><span class="line">    <span class="keyword">for</span> ret := <span class="keyword">range</span> ch &#123;</span><br><span class="line">        fmt.Println(ret)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="单向通道"><a href="#单向通道" class="headerlink" title="单向通道"></a>单向通道</h3><ul>
+<li>是单向的，也就是说，只能接受或者只能发送。</li>
+<li>多用于函数当中，限制此函数对通道的操作。</li>
+</ul>
+<h3 id="select多路复用"><a href="#select多路复用" class="headerlink" title="select多路复用"></a>select多路复用</h3><p>同一时刻对多个通道进行操作(存值和取值)</p>
+<h2 id="并发安全和锁"><a href="#并发安全和锁" class="headerlink" title="并发安全和锁"></a>并发安全和锁</h2><p>先来看一个示例，多个goroutine同时对同一个变量进行修改：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个全局变量</span></span><br><span class="line"><span class="keyword">var</span> x <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个函数，对x进行循环递增操作</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5000</span>; i++ &#123;</span><br><span class="line">        x++</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开启两个goroutine，同时对变量x进行修改。</span></span><br><span class="line">    fmt.Println(<span class="string">"开启"</span>)</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">go</span> add()</span><br><span class="line">    <span class="keyword">go</span> add()</span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"结束"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"x的值为："</span>, x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行多次结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">开启</span><br><span class="line">结束</span><br><span class="line">x的值为： <span class="number">6731</span></span><br><span class="line"></span><br><span class="line">开启</span><br><span class="line">结束</span><br><span class="line">x的值为： <span class="number">5950</span></span><br><span class="line"></span><br><span class="line">开启</span><br><span class="line">结束</span><br><span class="line">x的值为： <span class="number">10000</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出来，会对数据造成混乱，所以需要对数据进行加锁。</p>
+<h3 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h3><p>定义一个互斥锁<code>sync.Mutex</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个全局变量</span></span><br><span class="line"><span class="keyword">var</span> x <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个互斥锁</span></span><br><span class="line"><span class="keyword">var</span> lock sync.Mutex</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个函数，对x进行循环递增操作</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5000</span>; i++ &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加锁</span></span><br><span class="line">        lock.Lock()</span><br><span class="line">        x++</span><br><span class="line">        <span class="comment">// 解锁</span></span><br><span class="line">        lock.Unlock()</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开启两个goroutine，同时对变量x进行修改。</span></span><br><span class="line">    fmt.Println(<span class="string">"开启"</span>)</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">go</span> add()</span><br><span class="line">    <span class="keyword">go</span> add()</span><br><span class="line">    wg.Wait()</span><br><span class="line">    fmt.Println(<span class="string">"结束"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"x的值为："</span>, x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行多次的结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">开启</span><br><span class="line">结束</span><br><span class="line">x的值为： <span class="number">10000</span></span><br><span class="line"></span><br><span class="line">开启</span><br><span class="line">结束</span><br><span class="line">x的值为： <span class="number">10000</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出，执行结果都是一样的，加锁后，同一时刻只能有一个<code>goroutine</code>抢到这把锁，从而执行对数据的修改。</p>
+<h3 id="读写互斥锁"><a href="#读写互斥锁" class="headerlink" title="读写互斥锁"></a>读写互斥锁</h3><p>互斥锁是完全互斥的，但是有时候我们只是单纯的读那个资源，加锁是没必要的。对于读多写少的场景，go语言提供了另一种锁，称为读写互斥锁。也就是<code>sync</code>包的<code>RWMutex</code>类型。</p>
+<p>先来看一个加互斥锁的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    x    <span class="keyword">int</span></span><br><span class="line">    lock sync.Mutex</span><br><span class="line">    wg   sync.WaitGroup</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个读方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">read</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 加互斥锁</span></span><br><span class="line">    lock.Lock()</span><br><span class="line">    <span class="comment">// 模拟读消耗的时间为1毫秒</span></span><br><span class="line">    time.Sleep(time.Millisecond * <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// 解互斥锁</span></span><br><span class="line">    lock.Unlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个写方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">write</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 加互斥锁</span></span><br><span class="line">    lock.Lock()</span><br><span class="line">    <span class="comment">// 修改x的值</span></span><br><span class="line">    x++</span><br><span class="line">    <span class="comment">// 模拟写操作的时间为10毫秒</span></span><br><span class="line">    time.Sleep(time.Millisecond * <span class="number">10</span>)</span><br><span class="line">    <span class="comment">// 解互斥锁</span></span><br><span class="line">    lock.Unlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 程序开始时间</span></span><br><span class="line">    start := time.Now()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 模拟写场景,10次</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> write()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//模拟读场景，读10000万次</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> read()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 两个goroutine都执行完毕</span></span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 程序结束时间</span></span><br><span class="line">    end := time.Now()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读写共耗时</span></span><br><span class="line">    fmt.Println(end.Sub(start))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行多次的结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">11.21610598s</span></span><br><span class="line"><span class="number">11.234064043s</span></span><br><span class="line"><span class="number">11.181700508s</span></span><br></pre></td></tr></table></figure>
+
+<p>很显然，这是加锁不合理的。因为我对数据的修改只有10次，1次消耗10毫秒，修改10次也就100毫秒，也就是0.1秒。对数据的读是不对数据进行修改的，1次消耗1毫秒，1万次就是10000毫秒。也就是10秒。所以，程序最终的耗时是以读的消耗为准。但不应该如此。这时候就用到了读写互斥锁。</p>
+<p>读写互斥锁的特点：</p>
+<ul>
+<li>可以随便读，多个goroutine同时读，这将可以大大节省时间。</li>
+<li>一个<code>goroutine</code>在写的时候，其余<code>goroutine</code>啥也不能干，不能读也不能写。这就同普通互斥锁一样，保证了数据安全。</li>
+</ul>
+<p>修改代码，改用读写互斥锁：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">    x      <span class="keyword">int</span></span><br><span class="line">    rwlock sync.RWMutex</span><br><span class="line">    wg     sync.WaitGroup</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个读方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">read</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 加读锁</span></span><br><span class="line">    rwlock.RLock()</span><br><span class="line">    <span class="comment">// 模拟读消耗的时间为1毫秒</span></span><br><span class="line">    time.Sleep(time.Millisecond * <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// 解读锁</span></span><br><span class="line">    rwlock.RUnlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个写方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">write</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 加写锁</span></span><br><span class="line">    rwlock.Lock()</span><br><span class="line">    <span class="comment">// 修改x的值</span></span><br><span class="line">    x++</span><br><span class="line">    <span class="comment">// 模拟写操作的时间为10毫秒</span></span><br><span class="line">    time.Sleep(time.Millisecond * <span class="number">10</span>)</span><br><span class="line">    <span class="comment">// 解写锁</span></span><br><span class="line">    rwlock.Unlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 程序开始时间</span></span><br><span class="line">    start := time.Now()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 模拟写场景,10次</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> write()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//模拟读场景，读10000万次</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> read()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 两个goroutine都执行完毕</span></span><br><span class="line">    wg.Wait()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 程序结束时间</span></span><br><span class="line">    end := time.Now()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读写共耗时</span></span><br><span class="line">    fmt.Println(end.Sub(start))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行过此结果(效果很明显)：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">117.891745</span>ms</span><br><span class="line"><span class="number">119.4733</span>ms</span><br><span class="line"><span class="number">119.208284</span>ms</span><br><span class="line"><span class="number">113.77037</span>ms</span><br></pre></td></tr></table></figure>
+
+<p>消耗的时间将近快于100倍。</p>
+<p>只有在读的操作远大于写的操作时，使用读写锁才能提高性能和效率。</p>
+<h3 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h3><h3 id="sync-Map"><a href="#sync-Map" class="headerlink" title="sync.Map"></a>sync.Map</h3><h2 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h2><h3 id="atomic包"><a href="#atomic包" class="headerlink" title="atomic包"></a>atomic包</h3><h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechat.jpg" alt="JiangZiYa 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpg" alt="JiangZiYa 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/docker%E9%95%9C%E5%83%8F%E6%93%8D%E4%BD%9C.html" rel="next" title="docker镜像操作">
+                <i class="fa fa-chevron-left"></i> docker镜像操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/consul-cluster-binding.html" rel="prev" title="consul集群搭建">
+                consul集群搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+/  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpg"
+                alt="JiangZiYa" />
+            
+              <p class="site-author-name" itemprop="name">JiangZiYa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/CodingJzy/" target="_blank" title="GitHub" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:jw19961019@gmail.com" target="_blank" title="E-Mail" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://plus.google.com/jiangwei" target="_blank" title="Google" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-google"></i>Google</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://instagram.com/codingxjm" target="_blank" title="Instagram" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5754053497/" target="_blank" title="微博" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.zhihu.com/people/jiang-wei-42-10/" target="_blank" title="知乎" rel="external nofollow">
+                      
+                        <i class="fa fa-fw fa-book"></i>知乎</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+        <div id="music163player">	
+		<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=28283145&auto=1&height=66"></iframe>
+	</div>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#go语言的并发"><span class="nav-number">1.</span> <span class="nav-text">go语言的并发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#并发与并行"><span class="nav-number">1.1.</span> <span class="nav-text">并发与并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#goroutine"><span class="nav-number">1.2.</span> <span class="nav-text">goroutine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动单个goroutine"><span class="nav-number">1.2.1.</span> <span class="nav-text">启动单个goroutine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sync-WaitGroup"><span class="nav-number">1.2.2.</span> <span class="nav-text">sync.WaitGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动多个goroutine"><span class="nav-number">1.2.3.</span> <span class="nav-text">启动多个goroutine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#goroutine与线程"><span class="nav-number">1.2.4.</span> <span class="nav-text">goroutine与线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可增长的栈"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">可增长的栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#goroutine调度"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">goroutine调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GOMAXPROCS"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">GOMAXPROCS</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channel"><span class="nav-number">1.3.</span> <span class="nav-text">channel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明"><span class="nav-number">1.3.1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#channel操作"><span class="nav-number">1.3.2.</span> <span class="nav-text">channel操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#发送"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接受"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">接受</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关闭"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">关闭</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#例子"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲通道"><span class="nav-number">1.3.3.</span> <span class="nav-text">缓冲通道</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#无缓冲通道"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">无缓冲通道</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有缓冲通道"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">有缓冲通道</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收值判断通道是否关闭"><span class="nav-number">1.3.4.</span> <span class="nav-text">接收值判断通道是否关闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单向通道"><span class="nav-number">1.3.5.</span> <span class="nav-text">单向通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select多路复用"><span class="nav-number">1.3.6.</span> <span class="nav-text">select多路复用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发安全和锁"><span class="nav-number">1.4.</span> <span class="nav-text">并发安全和锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#互斥锁"><span class="nav-number">1.4.1.</span> <span class="nav-text">互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读写互斥锁"><span class="nav-number">1.4.2.</span> <span class="nav-text">读写互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sync-Once"><span class="nav-number">1.4.3.</span> <span class="nav-text">sync.Once</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sync-Map"><span class="nav-number">1.4.4.</span> <span class="nav-text">sync.Map</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子操作"><span class="nav-number">1.5.</span> <span class="nav-text">原子操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#atomic包"><span class="nav-number">1.5.1.</span> <span class="nav-text">atomic包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">1.5.2.</span> <span class="nav-text">示例</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiangZiYa</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://jiangziya.top" rel="external nofollow">思念你的人所在的地方，那便是你的归宿。</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next rel="external nofollow"">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "./public/search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 -->
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"superSample":2,"width":300,"height":260,"position":"right","hOffset":150,"vOffset":300},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.5,"opacityOnHover":0.4},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
