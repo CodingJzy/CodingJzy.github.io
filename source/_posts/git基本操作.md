@@ -72,3 +72,38 @@ git log
 git log --oneline
 ```
 
+## 删除和重命名
+
+### 手动
+
+```bash
+# 手动删除
+rm -rf file
+
+# add
+git add .
+
+# commit
+git commit -m "delete"
+
+# 手动重命名
+mv file1 file2
+
+# add
+git add .
+
+# commit
+git commit -m "mv"
+```
+
+### git 自动
+
+```bash
+git rm file
+
+git commit -m "delete"
+
+git mv file1 file2
+
+git commit -m "mv"
+```
