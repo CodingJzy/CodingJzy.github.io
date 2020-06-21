@@ -138,3 +138,46 @@ $ git branch -D b2
 Deleted branch b2 (was ef5e3ea).
 ```
 
+## 合并分支
+
+```bash
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b4)
+$ ls
+1.txt  2.txt  3.txt  4.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b4)
+$ cat 4.txt
+50%
+100%
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b4)
+$ ls
+1.txt  2.txt  3.txt  4.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b4)
+$ git checkout master
+Switched to branch 'master'
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (master)
+$ ls
+1.txt  2.txt  3.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (master)
+$ git merge b4
+Updating 2137bd7..004004e
+Fast-forward
+ 4.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 4.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (master)
+$ ls
+1.txt  2.txt  3.txt  4.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (master)
+$ cat 4.txt
+50%
+100%
+```
+
+我在b4分支创建了4.txt。b4分支提交后，切换到master分支，此时并没有4.txt文件。用`merge`命令，把b4分支的内容合并到当前的master分支，合并完之后查看4.txt存在。

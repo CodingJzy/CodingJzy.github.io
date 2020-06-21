@@ -107,3 +107,104 @@ git mv file1 file2
 
 git commit -m "mv"
 ```
+
+## 暂存
+
+当我们手头上的工作完成部分时，但不想提交，却又想切换分支，就可以先把此时的工作保存到一个栈上。
+
+### 创建
+
+```bash
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ echo "git stash" > b7.txt
+
+# 保存到栈中
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash
+Saved working directory and index state WIP on b7: 38193c7 b7.txt
+```
+
+加注释信息保存：
+
+```bash
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash push -m "update 1.txt"
+Saved working directory and index state On b7: update 1.txt
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash list
+stash@{0}: On b7: update 1.txt
+stash@{1}: WIP on b7: 38193c7 b7.txt
+stash@{2}: WIP on b7: 38193c7 b7.txt
+```
+
+### 查看
+
+```bash
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash list
+stash@{0}: WIP on b7: 38193c7 b7.txt
+```
+
+### 应用
+
+当我们切换到其他分之后，回到切换前的分支，我们要将工作内容恢复，就可以从栈中取出来。
+
+#### pop
+
+```bash
+# 保存的栈中
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash
+Saved working directory and index state WIP on b7: 38193c7 b7.txt
+
+# 查看工作区状态
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git status
+On branch b7
+nothing to commit, working tree clean
+
+# 查看栈中的stash
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash list
+stash@{0}: WIP on b7: 38193c7 b7.txt
+
+# 取出来
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash pop
+On branch b7
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   b7.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (852b6d730a000d8d7393027f91a766313c2e8cbd)
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git status
+On branch b7
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   b7.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+#### apply
+
+与pop区别就是，取出来之后并不会删除stash。所以要手动删除
+
+### 删除
+
+```bash
+# 删除索引为0的stash
+$ git stash drop  0
+Dropped refs/stash@{0} (46d5fef30728f1ff802ac254af522191a11387f3)
+
+jw199@DESKTOP-2OG3D2D MINGW64 /c/my_code/git_study (b7)
+$ git stash list
+
+```
+
