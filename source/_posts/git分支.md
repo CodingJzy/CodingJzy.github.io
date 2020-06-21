@@ -9,7 +9,6 @@ description: Git分支
 ## 分支
 
 分支就是一个指针，跟随者最新提交。
-![](./uploads/git/git分支.png)
 
 ## 查看分支
 
