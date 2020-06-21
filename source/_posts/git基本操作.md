@@ -61,3 +61,14 @@ git commit -m "将缓存区的文件提交到本地仓库"
 
 git commit -a "两步合成一步，也就是add commit 一条命令解决"
 ```
+
+## 查看历史提交记录
+
+```bash
+# 长命令
+git log
+
+# 短命令
+git log --oneline
+```
+
