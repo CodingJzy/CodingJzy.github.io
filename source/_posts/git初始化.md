@@ -24,6 +24,10 @@ git version 2.18.0.windows.1
 配置提交时作为提交者的用户名和邮件地址，这里`--global`是设置全局。也可以针对不同项目做不同设置：`--local`。
 
 ```bash
+# 配置系统(所有用户)
+$ git config --system user.name "CodingJzy"
+$ git config --system user.email "jw19961019@gmail.com"
+
 # 配置全局
 $ git config --global user.name "CodingJzy"
 $ git config --global user.email "jw19961019@gmail.com"
@@ -127,3 +131,10 @@ $ git commit -m "git init "
  1 file changed, 1 insertion(+)
  create mode 100644 hello-git.txt
 ```
+
+**总结：**
+
+- 工作区
+- 缓存区
+- 本地仓库
+- 远程仓库
