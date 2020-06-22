@@ -138,6 +138,12 @@ $ git branch -D b2
 Deleted branch b2 (was ef5e3ea).
 ```
 
+**删除远程分支：**
+
+```bash
+git push origin --delete remotes/origin/branch
+```
+
 ## 合并分支
 
 ```bash
